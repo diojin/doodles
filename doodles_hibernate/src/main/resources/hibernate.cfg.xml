@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+    	<property name="hibernate.show_sql">true</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.cache.use_second_level_cache">false</property>
+        <property name="hibernate.jdbc.batch_size">30</property>        
+        <property name="hibernate.connection.autocommit">false</property>
+        <!-- Mapping files -->
+        <mapping resource="outerhaven/dao/vo/Employee.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/Department.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/VEmpDept.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>

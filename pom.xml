@@ -11,6 +11,7 @@
   </description>
 
   <modules>
+  	<module>doodles-hibernate</module>
   </modules>
 
   <properties>

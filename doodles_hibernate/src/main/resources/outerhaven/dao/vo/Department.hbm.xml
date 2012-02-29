@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 27, 2011 2:52:38 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping package="outerhaven.dao.vo">
+    <class name="Department" table="department">
+    	<id name="id">
+			<generator class="native" />     
+    	</id>
+        <property name="deptname" type="string"/>
+        <set name="employees" lazy="true">
+        	<key column="deptid"/>
+        	<one-to-many class="Employee" />        
+        </set>
+    </class>
+</hibernate-mapping>

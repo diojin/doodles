@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 27, 2011 2:52:38 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping package="outerhaven.dao.vo">
+    <class name="Employee" table="employee">
+    	<id name="id">
+			<generator class="native" />     
+    	</id>
+        <property name="empname" type="string" />
+        <property name="empage" type="int" />
+		<property name="context" type="string" />
+		<property name="deptid" type="int" insert="false" update="false"/>
+		<many-to-one name="department" column="deptid" fetch="select" cascade="all" class="Department" />
+    </class>
+</hibernate-mapping>
