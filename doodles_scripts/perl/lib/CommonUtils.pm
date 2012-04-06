@@ -19,3 +19,5 @@ sub dos_command{
 sub dos_command_no_output{
 	return system("cmd //C $_[0]");	
 }
+
+return 1;
