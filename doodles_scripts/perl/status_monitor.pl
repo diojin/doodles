@@ -15,6 +15,7 @@ my $type = "";
 my $status = "";
 my $loc="";
 my $statusflag = "";
+my $pid = "";
 
 while ( scalar(@ARGV) ){
 	my $arg = shift @ARGV;
@@ -44,7 +45,7 @@ if ( $module.$type.$statusflag eq "" ){
 
 sub report_single{
 	$loc = 	$gf_settings{$module}{$type};
-	$status = get_status( $type, $loc );
+	get_status_full( $type, $loc, $status, $pid );	
 	write;
 }
 sub report_by_type{
@@ -52,13 +53,13 @@ sub report_by_type{
 	my $arg = $_[0];
 	while (( $module, my $content ) = each %gf_settings ){
 		while ( ($type, $loc) = each %$content  ){
-			$status = get_status( $type,$loc );
+			get_status_full( $type,$loc, $status, $pid );
 			push( @tmpds,
-				sprintf("%s %s %s %s", $status, $module, $type, $loc )) if $type eq $arg;
+				sprintf("%s %s %s %s %s", $status, $module, $type, $loc, $pid )) if $type eq $arg;
 		}
 	}
 	foreach ( sort @tmpds ){
-		( $status, $module, $type, $loc ) = split(/ /, $_);
+		( $status, $module, $type, $loc, $pid ) = split(/ /, $_);
 		write;
 	}
 	
@@ -69,21 +70,21 @@ sub report_by_module{
 	while (( $module, my $content ) = each %gf_settings ){
 		if ( $module eq $arg ){
 			while ( ($type, $loc) = each %$content  ){
-				$status = get_status( $type,$loc );
+				get_status_full( $type,$loc, $status, $pid );
 				push( @tmpds,
-					sprintf("%s %s %s %s", $status, $module, $type, $loc ));
+					sprintf("%s %s %s %s %s", $status, $module, $type, $loc, $pid ));
 			}
 		}
 	}
 	foreach ( sort @tmpds ){
-		( $status, $module, $type, $loc ) = split(/ /, $_);
+		( $status, $module, $type, $loc, $pid ) = split(/ /, $_);
 		write;
 	}
 }
 sub report_by_status{
 	while (( $module, my $content ) = each %gf_settings ){
 		while ( ($type, $loc) = each %$content  ){
-			$status = get_status( $type,$loc );
+			get_status_full( $type,$loc, $status, $pid );
 			write if $status eq $_[0];
 		}
 	}
@@ -93,13 +94,13 @@ sub report_full{
 	my @tmpds = ();
 	while (( $module, my $content ) = each %gf_settings ){
 		while ( ($type, $loc) = each %$content  ){
-			$status = get_status( $type,$loc );
+			get_status_full( $type,$loc, $status, $pid );
 			push( @tmpds,
-				sprintf("%s %s %s %s", $status, $module, $type, $loc ));
+				sprintf("%s %s %s %s %s", $status, $module, $type, $loc, $pid ));
 		}
 	}
 	foreach ( sort @tmpds ){
-		( $status, $module, $type, $loc ) = split(/ /, $_);
+		( $status, $module, $type, $loc, $pid ) = split(/ /, $_);
 		write;
 	}
 }
@@ -107,10 +108,10 @@ sub report_full{
 sub get_status{
 	switch ( $_[0] ){
 		case ( "locator" ){
-			return gemfire_locator_status($_[1]);	
+			return gemfire_locator_status_full($_[1]);	
 		}
 		case ( "server" ){
-			return gemfire_status($_[1]);		
+			return gemfire_status_full($_[1]);		
 		}
 		case ( "server-w" ){
 			return gemfire_status($_[1]);
@@ -126,14 +127,36 @@ sub get_status{
 		}
 	}	
 }
+sub get_status_full{
+	switch ( $_[0] ){
+		case ( "locator" ){
+			gemfire_locator_status_full($_[1], $_[2], $_[3]);	
+		}
+		case ( "server" ){
+			gemfire_status_full($_[1], $_[2], $_[3]);		
+		}
+		case ( "server-w" ){
+			gemfire_status_full($_[1], $_[2], $_[3]);
+		}
+		case ( "agent" ){
+			gemfire_agent_status_full($_[1], $_[2], $_[3]);
+		}
+		case ( "agent-w" ){
+			gemfire_agent_status_full($_[1], $_[2], $_[3]);
+		}
+		else{
+
+		}
+	}	
+}
 
 format STDOUT_TOP =
 					STATUS
-MODULE     TYPE      STATUS        LOCATION
--------------------------------------------------------------------------------------------
+MODULE     TYPE      STATUS      PID       LOCATION
+---------------------------------------------------------------------------------------------------
 .
 format STDOUT =
-@<<<<<<<<<<@<<<<<<<<<@<<<<<<<<<<<<<@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$module, $type, $status, $loc
+@<<<<<<<<<<@<<<<<<<<<@<<<<<<<<<<<@<<<<<<<<<@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$module, $type, $status,$pid,$loc
 . 
 

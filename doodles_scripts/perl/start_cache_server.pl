@@ -43,7 +43,7 @@ sub start_cache_server{
 	}
 	my $status = gemfire_status($gf_settings{$basemodule}{"server".$writerflag});
 	if ( $status eq "running" || $status eq "starting" ){
-		printf "%s: The %s cacheserver is %s, no further opertion.", 
+		printf "%s: The %s cacheserver is %s, no further opertion.\n", 
 			dos_command("date /T"), $_[0], $status;
 		return 1;
 	}
@@ -72,7 +72,7 @@ sub start_cache_server{
 
 sub generate_classpath{
 	my $classpath = $ENV{"CLASSPATH"}; 
-	$classpath =~ s/\\/\//g;
+#	$classpath =~ s/\\/\//g;
 	opendir( DIR , $_[0] );
 	my @entries = readdir DIR;
 	close(DIR);
@@ -81,5 +81,6 @@ sub generate_classpath{
 			$classpath .= ";".$_[0]."/".$file;
 		}		
 	}
+	$classpath =~ s/\//\\/g;
 	return $classpath;
 }
