@@ -27,7 +27,7 @@ sub stop_locator{
 	}
 	my $status = gemfire_locator_status($gf_settings{$_[0]}{'locator'});
 	if ( $status eq "stopped" || $status eq "stoppinh" || $status eq "killed" ){
-		printf("%s: The %s locator is %s, no further opertion.", 
+		printf("%s: The %s locator is %s, no further opertion.\n", 
 			dos_command("date /T"), $_[0], $status);
 		return 1;
 	}

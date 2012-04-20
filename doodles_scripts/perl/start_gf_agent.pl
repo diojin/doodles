@@ -43,7 +43,7 @@ sub start_gf_agent{
 	}	
 	my $status = gemfire_agent_status($gf_settings{$basemodule}{"agent".$writerflag});
 	if ( $status eq "running" || $status eq "starting" ){
-		printf "%s: The %s gemfire agent is %s, no further opertion.", 
+		printf "%s: The %s gemfire agent is %s, no further opertion.\n", 
 			dos_command("date /T"), $_[0], $status;
 		return 1;
 	}

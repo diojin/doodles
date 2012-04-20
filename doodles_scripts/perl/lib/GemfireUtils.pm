@@ -67,7 +67,9 @@ sub gemfire_locator_status_full{
 		$status = dos_command("gemfire info-locator");
 	}	
 	($_[1], $_[2]) = $status =~ /.*" is\s*(\w+)\.\s*Locator.* is (.*)\.$/g;
-	$_[2] =~ s/,//g; 
+	$_[2] =~ s/,//g if defined $_[2];
+	$_[1] = "" unless defined $_[1];
+	$_[2] = "" unless defined $_[2];  
 }
 
 return 1;

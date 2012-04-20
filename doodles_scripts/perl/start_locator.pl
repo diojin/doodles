@@ -27,7 +27,7 @@ sub start_locator{
 	}
 	my $status = gemfire_locator_status($gf_settings{$_[0]}{'locator'});
 	if ( $status eq "running" || $status eq "starting" ){
-		printf "%s: The %s CacheServer is %s, no further opertion.", 
+		printf "%s: The %s CacheServer is %s, no further opertion.\n", 
 			dos_command("date /T"), $_[0], $status;
 		return 1;
 	}
