@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+	<gateway-hub id="simpleHub" port="-1" startup-policy="none">
+		<gateway id="gateway1">
+			<gateway-listener>
+				<class-name>outerhaven.gemfire.listener.SimpleGatewayListener</class-name>
+				<parameter name="contextFile">
+					<string>spring/context.xml</string>
+				</parameter>
+			</gateway-listener>
+			<gateway-queue disk-store-name="base_disk_store" enable-persistence="true" />
+		</gateway>
+	</gateway-hub>	
+	<!-- let GemFire bind to an available port -->
+	<cache-server port="0" />
+	<disk-store name="base_disk_store" auto-compact="false" max-oplog-size="50" queue-size="1000000">
+		<disk-dirs>
+			<disk-dir>base-store</disk-dir>
+		</disk-dirs>
+	</disk-store>
+	<region-attributes id="replicate_ack" refid="REPLICATE" scope="distributed-ack" />
+	<region-attributes id="attr_simple_hub" refid="replicate_ack" enable-gateway="true" hub-id="simpleHub" />	
+    <region name="exampleRegion" refid="attr_simple_hub" />
+</cache>
