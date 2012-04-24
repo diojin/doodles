@@ -22,7 +22,11 @@
 			<disk-dir>base-store</disk-dir>
 		</disk-dirs>
 	</disk-store>
-	<region-attributes id="replicate_ack" refid="REPLICATE" scope="distributed-ack" />
+	<region-attributes id="replicate_ack" refid="REPLICATE" scope="distributed-ack" >
+		<cache-listener>
+			<class-name>outerhaven.gemfire.listener.SimpleCacheListener</class-name>
+		</cache-listener>
+	</region-attributes>
 	<region-attributes id="attr_simple_hub" refid="replicate_ack" enable-gateway="true" hub-id="simpleHub" />	
     <region name="exampleRegion" refid="attr_simple_hub" />
 </cache>
