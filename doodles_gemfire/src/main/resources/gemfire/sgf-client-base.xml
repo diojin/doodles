@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:gfe="http://www.springframework.org/schema/gemfire"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+							http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire.xsd
+					">
+
+	<gfe:cache id="base-cache" properties-ref="gf-props" />
+
+	<util:properties id="gf-props" location="classpath:/gemfire/gemfire.properties"/>
+
+
+	<gfe:pool id="base-pool" subscription-enabled="true"  read-timeout="0" retry-attempts="1">
+		<gfe:locator host="localhost" port="10042"/>
+	</gfe:pool>
+	
+	<!-- GemFire client region definitions - requires the client to provider cache bean -->
+	
+	<!-- reference data client regions configuration -->
+	<gfe:client-region id="exampleRegion" cache-ref="base-cache"
+			pool-name="base-pool" data-policy="NORMAL">
+		 <gfe:regex-interest pattern=".*"/>
+	</gfe:client-region>
+
+</beans>
