@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 27, 2011 2:52:38 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping package="outerhaven.dao.vo">
+    <class name="Order" table="orders">
+    	<id name="id">
+			<generator class="native" />     
+    	</id>
+        <property name="customerName" column="customer_name" type="string" />
+        <property name="address" type="string" />
+        <set name="items" table="purchase_items" 
+        	inverse="false" lazy="false" cascade="save-update" fetch="join">
+			<key>
+				<column name="order_id" not-null="true" />
+			</key>
+			<composite-element class="outerhaven.dao.vo.PurchaseItems" >
+			    <nested-composite-element name="id" class="java.lang.Integer" />
+				<property name="price" type="double" />
+				<property name="quantity" type="int" />
+				<property name="purchaseDate" type="java.util.Date" column="purchase_date" />
+				<many-to-one name="item" class="outerhaven.dao.vo.Item" lazy="false" >
+					<column name="item_id" not-null="true" />
+				</many-to-one>			
+			</composite-element>        
+        </set>
+    </class>
+</hibernate-mapping>

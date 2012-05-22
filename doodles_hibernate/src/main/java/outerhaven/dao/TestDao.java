@@ -1,7 +1,10 @@
 package outerhaven.dao;
 
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +18,9 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import outerhaven.dao.vo.Department;
 import outerhaven.dao.vo.Employee;
+import outerhaven.dao.vo.Item;
+import outerhaven.dao.vo.Order;
+import outerhaven.dao.vo.PurchaseItems;
 import outerhaven.dao.vo.VEmpDept;
 
 public class TestDao {
@@ -23,11 +29,52 @@ public class TestDao {
 	private HibernateTemplate hibernateTemplate;
 	
 	public static void main(String[] args) {
-		logger.info(test4());
-		
+//		logger.info(test4());
+			
 //		Department de = test8();
 //		logger.debug("size:\t"+ de.getEmployees()==null);
+		m2mSaveTest();
+//		m2mLoadTest();
 	}
+	public static void m2mLoadTest(){
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao=(TestDao)ctx.getBean("testDao");
+		Session session= dao.getSessionFactory().openSession();
+		Order order = (Order)session.load(Order.class, 27);
+		logger.info(((PurchaseItems)order.getItems().iterator().next()).getItem().getDescription());
+	}
+	
+	public static void m2mSaveTest(){
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao=(TestDao)ctx.getBean("testDao");
+		Session session= dao.getSessionFactory().openSession();
+		Order order = new Order();
+		order.setCustomerName("dio");
+		order.setAddress("nowhere");
+		Item item = new Item();
+		item.setName("gamepad");
+		item.setDescription("for gaming");
+		PurchaseItems pur = new PurchaseItems();
+		pur.setPrice(new Double(22.2));
+		pur.setPurchaseDate(new Date());
+		pur.setQuantity(11);
+		
+		pur.setItem(item);
+		pur.setOrder(order);
+		
+		Set<PurchaseItems> set = new HashSet<PurchaseItems>();
+		set.add(pur);
+		order.setItems(set);
+		
+		set = new HashSet<PurchaseItems>();
+		set.add(pur);		
+		item.setOrders(set);
+		
+		session.save(item);
+		session.save(order);
+		session.flush();
+	}
+	
 	public static Department test8(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");

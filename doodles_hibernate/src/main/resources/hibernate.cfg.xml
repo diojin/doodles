@@ -6,13 +6,17 @@
 <hibernate-configuration>
     <session-factory>
     	<property name="hibernate.show_sql">true</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    	<property name="hibernate.format_sql">true</property>
+    	<!-- <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> -->
+        <property name="hibernate.dialect">org.hibernate.dialect.SybaseDialect</property>
         <property name="hibernate.cache.use_second_level_cache">false</property>
         <property name="hibernate.jdbc.batch_size">30</property>        
-        <property name="hibernate.connection.autocommit">false</property>
+        <!-- <property name="hibernate.connection.autocommit">true</property> -->
         <!-- Mapping files -->
         <mapping resource="outerhaven/dao/vo/Employee.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/Department.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/VEmpDept.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/Order.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/Item.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

@@ -12,6 +12,7 @@
 
   <modules>
   	<module>doodles-hibernate</module>
+  	<module>doodles-gemfire</module>
   </modules>
 
   <properties>
