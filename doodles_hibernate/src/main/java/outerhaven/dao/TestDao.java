@@ -33,8 +33,10 @@ public class TestDao {
 			
 //		Department de = test8();
 //		logger.debug("size:\t"+ de.getEmployees()==null);
-		m2mSaveTest();
+//		m2mSaveTest();
+		
 //		m2mLoadTest();
+		testOne2ManySave();
 	}
 	public static void m2mLoadTest(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -167,6 +169,23 @@ public class TestDao {
 //			logger.debug(it.next());
 //		}	
 	}
+	
+	public static void testOne2ManySave(){
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao = (TestDao)ctx.getBean("testDao");
+		Session session = dao.getSessionFactory().openSession();
+		Department dept = new Department();
+		dept.setDeptname("haijian1");
+		Employee emp = new Employee();
+		emp.setDepartment(dept);
+		emp.setEmpname("haijian1");
+		emp.setEmpage(0);
+		emp.setContext("haha");
+		dept.getEmployees().add(emp);
+		session.save(dept);
+		
+	}
+	
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}

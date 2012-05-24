@@ -15,7 +15,7 @@
 				<column name="item_id" not-null="true" />
 			</key>
 			<composite-element class="outerhaven.dao.vo.PurchaseItems" >
-			 	<nested-composite-element name="id" class="java.lang.Integer" />
+				<property name="id" type="int" generated="insert" />
 				<property name="price" type="double" />
 				<property name="quantity" type="int" />
 				<property name="purchaseDate" type="java.util.Date" column="purchase_date" />

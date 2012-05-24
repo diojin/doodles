@@ -51,5 +51,5 @@ public class Employee {
 	private Integer empage;
 	private String context;
 	private Integer deptid;
-	private Department department = new Department();	
+	private Department department;	
 }

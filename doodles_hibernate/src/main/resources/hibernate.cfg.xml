@@ -7,8 +7,8 @@
     <session-factory>
     	<property name="hibernate.show_sql">true</property>
     	<property name="hibernate.format_sql">true</property>
-    	<!-- <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> -->
-        <property name="hibernate.dialect">org.hibernate.dialect.SybaseDialect</property>
+    	<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <!-- <property name="hibernate.dialect">org.hibernate.dialect.SybaseDialect</property> -->
         <property name="hibernate.cache.use_second_level_cache">false</property>
         <property name="hibernate.jdbc.batch_size">30</property>        
         <!-- <property name="hibernate.connection.autocommit">true</property> -->
