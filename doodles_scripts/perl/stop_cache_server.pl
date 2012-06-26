@@ -43,8 +43,8 @@ sub stop_cache_server{
 	}
 	my $status = gemfire_status($gf_settings{$basemodule}{"server".$writerflag});
 	if ( $status eq "stopped" || $status eq "stopping" || $status eq "killed"){
-		printf("%s: The %s cacheserver is %s, no further opertion.\n", 
-			dos_command("date /T"), $_[0], $status );
+		printf("The %s cacheserver is %s, no further opertion.\n", 
+			$_[0], $status );
 		return 1;
 	}
 	print "about to stop $_[0] cacheserver.\n";

@@ -21,11 +21,6 @@
 			<agent>agents/facility</agent>
 			<agent-w>agents/facility-writer</agent-w>
 		</facility>	
-		<marketdata>
-			<locator>locators/marketdata</locator>
-			<server>marketdata</server>
-			<agent>agents/marketdata</agent>
-		</marketdata>		
 	</workdir>
 	<properties>
 		<core>
@@ -61,14 +56,5 @@
 			<jmxport>12711</jmxport>
 			<jmxport-w>12712</jmxport-w>
 		</facility>
-		<marketdata>
-			<basedir>C:/workspace/risk-credit-marketdata</basedir>
-			<classpath>batch/install/lib</classpath>			
-			<locator>batch/src/main/resources/gemfire/gemfire-${instance}.properties</locator>
-			<server>batch/src/main/resources/gemfire/cache.xml</server>
-			<agent>batch/config/gf-agent-${instance}.properties</agent>
-			<port>10710</port>
-			<jmxport>10712</jmxport>
-		</marketdata>
 	</properties>
 </gemfire>
