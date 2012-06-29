@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
 @Aspect
@@ -26,6 +27,10 @@ public class BusinessProfiler {
         	System.out.println("hijacked : " + jp.getSignature().getName());
         	System.out.println("Method returned value is : " + result==null?"null":result);
         	System.out.println("******");
+        }
+        @Before(pointcut + " && @annotation(auditable)")
+        public void audit(Auditable auditable){
+        	System.out.println("i am audited with "+ auditable.value());
         }
         
 /**

@@ -5,18 +5,25 @@
 
 <hibernate-configuration>
     <session-factory>
-    	<property name="hibernate.show_sql">true</property>
+    	<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+    	<property name="hibernate.connection.driver_class">com.p6spy.engine.spy.P6SpyDriver</property>
+    	<property name="hibernate.cache.use_second_level_cache">false</property> 
+        <property name="hibernate.jdbc.batch_size">30</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password"></property>
+        <!-- <property name="connection.pool_size">1</property> -->
+        <!--<property name="hibernate.connection.autocommit">true</property>-->
+        <property name="hibernate.show_sql">true</property>
     	<property name="hibernate.format_sql">true</property>
     	<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <!-- <property name="hibernate.dialect">org.hibernate.dialect.SybaseDialect</property> -->
-        <property name="hibernate.cache.use_second_level_cache">false</property>
-        <property name="hibernate.jdbc.batch_size">30</property>        
-        <!-- <property name="hibernate.connection.autocommit">true</property> -->
-        <!-- Mapping files -->
+    	<!-- Mapping files -->
         <mapping resource="outerhaven/dao/vo/Employee.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/Department.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/VEmpDept.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/Order.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/Item.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/EntityChild2.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

@@ -2,6 +2,7 @@ package outerhaven.spring.aop.aspectj.annotation;
 
 public class BusinessImpl implements IBusiness {
 	@Override
+	@Auditable(value = "hahaha")
 	public void doSomeOperation() {
         System.out.println("I do what I do best, i.e sleep.");
         try {
