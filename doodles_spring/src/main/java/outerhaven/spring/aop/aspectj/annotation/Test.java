@@ -13,6 +13,9 @@ public class Test {
                                 "aop/aspectj/aspectj_anno_config.xml");
                 IBusiness bc = (IBusiness) context.getBean("myBusinessClass");
                 bc.doSomeOperation();
+                UsageTracked usage = (UsageTracked)context.getBean("myBusinessClass");
+                usage.increaseUseCount();
+                usage.increaseUseCount();
         }
 
 }

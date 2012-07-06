@@ -37,6 +37,8 @@ public class TestDao {
 		
 //		m2mLoadTest();
 		testOne2ManySave();
+//		testOne2ManyDelete();
+//		testOne2ManyDelete2();
 	}
 	public static void m2mLoadTest(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -184,6 +186,28 @@ public class TestDao {
 		dept.getEmployees().add(emp);
 		session.save(dept);
 		
+	}
+	public static void testOne2ManyDelete(){
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao = (TestDao)ctx.getBean("testDao");
+		Session session = dao.getSessionFactory().openSession();
+		Department dept = new Department();
+		Department value =(Department)session.load(Department.class, 9);
+		session.delete(value);
+		session.flush();
+		session.close();		
+	}
+	
+	public static void testOne2ManyDelete2(){
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao = (TestDao)ctx.getBean("testDao");
+		Session session = dao.getSessionFactory().openSession();
+		Query q = session.createQuery("from Department where id = :id ");
+		q.setParameter("id", 8);
+		Department dept = (Department)q.list().get(0);
+		session.delete(dept);
+		session.flush();
+		session.close();
 	}
 	
 	public SessionFactory getSessionFactory() {

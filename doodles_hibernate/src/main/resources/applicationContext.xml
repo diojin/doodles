@@ -19,7 +19,7 @@
 		</constructor-arg>
 	</bean>
     <!-- ================= configure datasource ================== -->  
-    <bean id="dataSource0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test" />
 		<property name="username" value="root" />
@@ -39,7 +39,7 @@
 		<property name="jndiName" value="jdbc/TestDB"/>
     </bean>
      -->
-
+<!-- 
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">  
 	    <property name="jndiName">  
 	            <value>jdbc/TestDB</value>  
@@ -55,7 +55,7 @@
 	        </props>  
 	    </property>  
 	</bean> 
-
+ -->
     <bean  id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
     	<property name="dataSource" ref="dataSource" />
     </bean>
