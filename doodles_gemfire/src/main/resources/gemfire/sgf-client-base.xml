@@ -14,16 +14,20 @@
 	<util:properties id="gf-props" location="classpath:/gemfire/gemfire.properties"/>
 
 
-	<gfe:pool id="base-pool" subscription-enabled="true"  read-timeout="0" retry-attempts="1">
-		<gfe:locator host="localhost" port="10042"/>
+	<gfe:pool id="base-pool" subscription-enabled="false"  read-timeout="0" retry-attempts="1">
+		<gfe:locator host="swccrsca210cu.nam.nsroot.net" port="10459"/>
 	</gfe:pool>
 	
 	<!-- GemFire client region definitions - requires the client to provider cache bean -->
 	
 	<!-- reference data client regions configuration -->
+<!-- 	
 	<gfe:client-region id="exampleRegion" cache-ref="base-cache"
 			pool-name="base-pool" data-policy="NORMAL">
 		 <gfe:regex-interest pattern=".*"/>
 	</gfe:client-region>
-
+ -->
+	<gfe:client-region id="chainIdRegion" cache-ref="base-cache"
+			pool-name="base-pool" data-policy="EMPTY">
+	</gfe:client-region>
 </beans>
