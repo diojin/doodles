@@ -1,0 +1,2 @@
+#!/bin/bash
+cat iq4.txt | sed 's/Ô¤Ôö/INC/g' | awk '{print $6}'
