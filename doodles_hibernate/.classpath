@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="**/*.java" kind="src" output="target/test-classes" path="src/test/java"/>
-	<classpathentry excluding="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry including="**/*.java" kind="src" path="src/test/java"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/test/resources"/>
 	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
 	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
 	<classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.1/jta-1.1.jar" sourcepath="M2_REPO/javax/transaction/jta/1.1/jta-1.1-sources.jar"/>
@@ -75,5 +75,6 @@
 	<classpathentry kind="var" path="M2_REPO/taglibs/standard/1.1.2/standard-1.1.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/p6spy/p6spy/1.3/p6spy-1.3.jar"/>
 	<classpathentry kind="lib" path="C:/Tools/sqlprofiler-0.3-bin/sqlprofiler.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/lib/freemarker.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

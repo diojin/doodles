@@ -1,0 +1,483 @@
+1, ID 
+The id property holds a unique identifier value for a particular event. All persistent entity classes
+(there are less important dependent classes as well) will need such an identifier property if we want
+to use the full feature set of Hibernate. In fact, most applications, especially web applications, need
+to distinguish objects by identifier, so you should consider this a feature rather than a limitation.
+However, we usually do not manipulate the identity of an object, hence the setter method should
+be private. Only Hibernate will assign identifiers when an object is saved. Hibernate can access
+public, private, and protected accessor methods, as well as public, private and protected fields
+directly. The choice is up to you and you can match it to fit your application design
+
+2, no-argument constructor
+The no-argument constructor is a requirement for all persistent classes; Hibernate has to create
+objects for you, using Java Reflection. The constructor can be private, however package or public
+visibility is required for runtime proxy generation and efficient data retrieval without bytecode
+instrumentation
+
+3, mapping type determination 
+Hibernate makes this mapping type determination using reflection when the
+mapping files are processed. This can take time and resources, so if startup
+performance is important you should consider explicitly defining the type to use
+
+4, current session tracking 
+Hibernate offers three methods of current session tracking. The "thread" based
+method is not intended for production use.
+
+5, 
+automatic dirty checking
+session write-behind
+
+6, inverse mapping attribute
+What about the inverse mapping attribute? For you, and for Java, a bi-directional link is simply
+a matter of setting the references on both sides correctly. Hibernate, however, does not have
+enough information to correctly arrange SQL INSERT and UPDATE statements (to avoid constraint
+violations). Making one side of the association inverse tells Hibernate to consider it a mirror
+of the other side. That is all that is necessary for Hibernate to resolve any issues that arise
+when transforming a directional navigation model to a SQL database schema. The rules are
+straightforward: all bi-directional associations need one side as inverse. In a one-to-many
+association it has to be the many-side, and in many-to-many association you can select either side.
+
+7, status 
+transient
+The instance is not associated with any persistence context. It has no persistent identity or
+primary key value.
+
+persistent
+The instance is currently associated with a persistence context. It has a persistent identity
+(primary key value) and can have a corresponding row in the database. For a particular
+persistence context, Hibernate guarantees that persistent identity is equivalent to Java identity
+in relation to the in-memory location of the object.
+
+detached
+The instance was once associated with a persistence context, but that context was closed,
+or the instance was serialized to another process. It has a persistent identity and can have
+a corresponding row in the database. For detached instances, Hibernate does not guarantee
+the relationship between persistent identity and Java identity.
+
+8, 
+There is no difference between a view and a base table for a Hibernate mapping. This is
+transparent at the database level, although some DBMS do not support views properly, especially
+with updates. Sometimes you want to use a view, but you cannot create one in the database (i.e.
+with a legacy schema). In this case, you can map an immutable and read-only entity to a given
+SQL subselect expression: 
+
+<class name="Summary">
+	<subselect>
+		select item.name, max(bid.amount), count(*)
+		from item
+		join bid on bid.item_id = item.id
+		group by item.name
+	</subselect>
+	<synchronize table="item"/>
+	<synchronize table="bid"/>
+	<id name="name"/>
+	...
+</class>
+
+9,
+The assigned generator makes Hibernate use unsaved-value="undefined". This forces
+Hibernate to go to the database to determine if an instance is transient or detached, unless there
+is a version or timestamp property, or you define Interceptor.isUnsaved().
+
+10,
+<key> element
+For systems where delete performance is important, we recommend that all keys should be
+defined on-delete="cascade". Hibernate uses a database-level ON CASCADE DELETE constraint,
+instead of many individual DELETE statements. Be aware that this feature bypasses Hibernate's
+usual optimistic locking strategy for versioned data.
+
+11 persistent collection
+Hibernate requires that persistent collection-valued fields be declared as an interface type
+Notice how the instance variable was initialized with an instance of HashSet. This is the best way
+to initialize collection valued properties of newly instantiated (non-persistent) instances. When you
+make the instance persistent, by calling persist() for example, Hibernate will actually replace
+the HashSet with an instance of Hibernate's own implementation of Set.
+
+Collections instances have the usual behavior of value types. They are automatically persisted
+when referenced by a persistent object and are automatically deleted when unreferenced. If a
+collection is passed from one persistent object to another, its ele	ments might be moved from one
+table to another. Two entities cannot share a reference to the same collection instance. Due to
+the underlying relational model, collection-valued properties do not support null value semantics.
+Hibernate does not distinguish between a null collection reference and an empty collection.
+
+The contained type is referred to as the collection element type. Collection elements are mapped
+by <element> or <composite-element>, or in the case of entity references, with <one-to-many>
+or <many-to-many>. The first two map elements with value semantics, the next two are used to
+map entity associations.
+
+
+12
+A one-to-many association links the tables of two classes via a foreign key with no intervening
+collection table. This mapping loses certain semantics of normal Java collections:
+• An instance of the contained entity class cannot belong to more than one instance of the
+collection.
+• An instance of the contained entity class cannot appear at more than one value of the collection
+index.
+
+13.
+If the foreign key column of a <one-to-many> association is declared NOT NULL,
+you must declare the <key> mapping not-null="true" or use a bidirectional
+association with the collection mapping marked inverse="true".
+
+14,
+Changes made only to the inverse end of the association are not persisted. This means that
+Hibernate has two representations in memory for every bidirectional association: one link from A
+to B and another link from B to A. This is easier to understand if you think about the Java object
+model and how a many-to-many relationship in Javais created
+
+The non-inverse side is used to save the in-memory representation to the database
+
+15, hibernate APIs
+
+• persist() makes a transient instance persistent. However, it does not guarantee that the
+identifier value will be assigned to the persistent instance immediately, the assignment might
+happen at flush time. persist() also guarantees that it will not execute an INSERT statement
+if it is called outside of transaction boundaries. This is useful in long-running conversations with
+an extended Session/persistence context.
+• save() does guarantee to return an identifier. If an INSERT has to be executed to get the
+identifier ( e.g. "identity" generator, not "sequence"), this INSERT happens immediately, no
+matter if you are inside or outside of a transaction. This is problematic in a long-running
+conversation with an extended Session/persistence context.
+
+Be aware that load() will throw an unrecoverable exception if there is no matching database
+row. If the class is mapped with a proxy, load() just returns an uninitialized proxy and does not
+actually hit the database until you invoke a method of the proxy. This is useful if you wish to create
+an association to an object without actually loading it from the database. It also allows multiple
+instances to be loaded as a batch if batch-size is defined for the class mapping.
+
+If you are not certain that a matching row exists, you should use the get() method which hits the
+database immediately and returns null if there is no matching row.
+
+It is possible to re-load an object and all its collections at any time, using the refresh() method.
+This is useful when database triggers are used to initialize some of the properties of the object.
+
+To throw away non-flushed changes and make the persistent entity consistent with its database
+representation, call:
+session.refresh( entity );
+
+list vs iterate
+A query is usually executed by invoking list(). The result of the query will be loaded completely
+into a collection in memory. Entity instances retrieved by a query are in a persistent state. The
+uniqueResult() method offers a shortcut if you know your query will only return a single object.
+Queries that make use of eager fetching of collections usually return duplicates of the root objects,
+but with their collections initialized. You can filter these duplicates through a Set.
+
+Occasionally, you might be able to achieve better performance by executing the query using the
+iterate() method. This will usually be the case if you expect that the actual entity instances
+returned by the query will already be in the session or second-level cache. If they are not already
+cached, iterate() will be slower than list() and might require many database hits for a simple
+query, usually 1 for the initial select which only returns identifiers, and n additional selects to
+initialize the actual instances
+
+merge vs update
+
+If the Cat with identifier catId had already been loaded by secondSession when the application
+tried to reattach it, an exception would have been thrown.
+Use update() if you are certain that the session does not contain an already persistent instance
+with the same identifier. Use merge() if you want to merge your modifications at any time without
+consideration of the state of the session. In other words, update() is usually the first method you
+would call in a fresh session, ensuring that the reattachment of your detached instances is the
+first operation that is executed.
+
+update
+Update the persistent instance with the identifier of the given detached instance. If there is a 
+persistent instance with the same identifier, an exception is thrown. This operation cascades to 
+associated instances if the association is mapped with cascade="save-update".
+
+merge
+Copy the state of the given object onto the persistent object with the same identifier. If there is 
+no persistent instance currently associated with the session, it will be loaded. Return the persistent 
+instance. If the given instance is unsaved, save a copy of and return it as a newly persistent instance. 
+The given instance does not become associated with the session. This operation cascades to associated 
+instances if the association is mapped with cascade="merge".
+
+lock
+Obtain the specified lock level upon the given object. This may be used to perform a version check (LockMode.READ), 
+to upgrade to a pessimistic lock (LockMode.PESSIMISTIC_WRITE), or to simply reassociate a transient 
+instance with a session (LockMode.NONE). This operation cascades to associated instances if the 
+association is mapped with cascade="lock".
+
+The lock() method also allows an application to reassociate an object with a new session.
+However, the detached instance has to be unmodified.
+
+//just reassociate:
+sess.lock(fritz, LockMode.NONE);
+//do a version check, then reassociate:
+sess.lock(izi, LockMode.READ);
+//do a version check, using SELECT ... FOR UPDATE, then reassociate:
+sess.lock(pk, LockMode.UPGRADE);
+
+saveOrUpdate() does the following:
+• if the object is already persistent in this session, do nothing
+• if another object associated with the session has the same identifier, throw an exception
+• if the object has no identifier property, save() it
+• if the object's identifier has the value assigned to a newly instantiated object, save() it
+• if the object is versioned by a <version> or <timestamp>, and the version property value is the
+same value assigned to a newly instantiated object, save() it
+• otherwise update() the object
+
+merge() is very different:
+• if there is a persistent instance with the same identifier currently associated with the session,
+copy the state of the given object onto the persistent instance
+• if there is no persistent instance currently associated with the session, try to load it from the
+database, or create a new persistent instance
+• the persistent instance is returned
+• the given instance does not become associated with the session, it remains detached
+
+evict()
+Remove this instance from the session cache. Changes to the instance will not be synchronized with 
+the database. This operation cascades to associated instances if the association is mapped 
+with cascade="evict".
+
+16 acquire JDBC connection
+JDBC is a perfect API for executing SQL statements,
+you can get a JDBC Connection at any time by calling session.connection().
+
+17 Flushing the Session
+
+• before some query executions
+• from org.hibernate.Transaction.commit()
+• from Session.flush()
+
+The SQL statements are issued in the following order:
+
+1. all entity insertions in the same order the corresponding objects were saved using
+Session.save()
+2. all entity updates
+3. all collection deletions
+4. all collection element deletions, updates and insertions
+5. all collection insertions
+
+
+18 all vs all-delete-orphan
+
+<set name="children" inverse="true" cascade="all">
+	<key column="parent_id"/>
+	<one-to-many class="Child"/>
+</set>
+
+Similarly, we do not need to iterate over the children when saving or deleting a Parent. The
+following removes p and all its children from the database.
+
+Parent p = (Parent) session.load(Parent.class, pid);
+session.delete(p);
+session.flush();
+
+However, the following code:
+Parent p = (Parent) session.load(Parent.class, pid);
+Child c = (Child) p.getChildren().iterator().next();
+p.getChildren().remove(c);
+c.setParent(null);
+session.flush();
+
+will not remove c from the database. In this case, it will only remove the link to p and cause a NOT
+NULL constraint violation. You need to explicitly delete() the Child.
+
+Parent p = (Parent) session.load(Parent.class, pid);
+Child c = (Child) p.getChildren().iterator().next();
+p.getChildren().remove(c);
+session.delete(c);
+session.flush();
+
+In our case, a Child cannot exist without its parent. So if we remove a Child from the collection,
+we do want it to be deleted. To do this, we must use cascade="all-delete-orphan".
+
+<set name="children" inverse="true" cascade="all-delete-orphan">
+<key column="parent_id"/>
+<one-to-many class="Child"/>
+</set>
+
+Even though the collection mapping specifies inverse="true", cascades are still processed by
+iterating the collection elements. If you need an object be saved, deleted or updated by cascade,
+you must add it to the collection. It is not enough to simply call setParent().
+
+19 cascade settings
+
+For each basic operation of the Hibernate session - including persist(), merge(),
+saveOrUpdate(), delete(), lock(), refresh(), evict(), replicate() - there is a
+corresponding cascade style. Respectively, the cascade styles are named create, merge,
+save-update, delete, lock, refresh, evict, replicate. If you want an operation to be
+cascaded along an association, you must indicate that in the mapping document.
+
+A special cascade style, delete-orphan, applies only to one-to-many associations, and indicates
+that the delete() operation should be applied to any child object that is removed from the
+association.
+
+Recommendations:
+• It does not usually make sense to enable cascade on a <many-to-one> or <many-to-many>
+association. Cascade is often useful for <one-to-one> and <one-to-many> associations.
+• If the child object's lifespan is bounded by the lifespan of the parent object, make it a life cycle
+object by specifying cascade="all,delete-orphan".
+• Otherwise, you might not need cascade at all. But if you think that you will often be working with
+the parent and children together in the same transaction, and you want to save yourself some
+typing, consider using cascade="persist,merge,save-update".
+
+Furthermore, a mere reference to a child from a persistent parent will result in save/update of the
+child. This metaphor is incomplete, however. A child which becomes unreferenced by its parent
+is not automatically deleted, except in the case of a <one-to-many> association mapped with
+cascade="delete-orphan". The precise semantics of cascading operations for a parent/child
+relationship are as follows:
+
+• If a parent is passed to persist(), all children are passed to persist()
+• If a parent is passed to merge(), all children are passed to merge()
+• If a parent is passed to save(), update() or saveOrUpdate(), all children are passed to
+saveOrUpdate()
+• If a transient or detached child becomes referenced by a persistent parent, it is passed to
+saveOrUpdate()
+• If a parent is deleted, all children are passed to delete()
+• If a child is dereferenced by a persistent parent, nothing special happens - the application should
+explicitly delete the child if necessary - unless cascade="delete-orphan", in which case the
+"orphaned" child is deleted.
+
+Finally, note that cascading of operations can be applied to an object graph at call time or at flush
+time. All operations, if enabled, are cascaded to associated entities reachable when the operation
+is executed. However, save-update and delete-orphan are transitive for all associated entities
+reachable during flush of the Session.
+
+20 read-only entities
+
+When an entity is read-only:
+• Hibernate does not dirty-check the entity's simple properties or single-ended associations;
+• Hibernate will not update simple properties or updatable single-ended associations;
+• Hibernate will not update the version of the read-only entity if only simple properties or singleended
+updatable associations are changed;
+
+We use the term unidirectional single-ended association when referring to functionality that is
+common to unidirectional one-to-one and many-to-one associations.
+
+Hibernate does some optimizing for read-only entities:
+• It saves execution time by not dirty-checking simple properties or single-ended associations.
+• It saves memory by deleting database snapshots.
+
+To throw away non-flushed changes and make the persistent entity consistent with its database
+representation, call:
+session.refresh( entity );
+
+To flush changes made before or while the entity was read-only and make the database
+representation consistent with the current state of the persistent entity:
+// evict the read-only entity so it is detached
+session.evict( entity );
+// make the detached entity (with the non-flushed changes) persistent
+session.update( entity );
+// now entity is no longer read-only and its changes can be flushed
+s.flush()
+
+The following shows that, even though an update to a read-only entity's many-to-one association
+has no affect on the entity's database representation, flush still cascades the save-update
+operation to the locally changed association.
+
+// get a contract with an existing plan;
+// make the contract read-only and change to a new plan
+tx = session.beginTransaction();
+Contract contract = ( Contract ) session.get( Contract.class, contractId );
+session.setReadOnly( contract, true );
+Plan newPlan = new Plan( "new plan"
+contract.setPlan( newPlan);
+tx.commit();
+// get the same contract
+tx = session.beginTransaction();
+contract = ( Contract ) session.get( Contract.class, contractId );
+newPlan = ( Contract ) session.get( Plan.class, newPlan.getId() );
+// contract.getPlan() still refers to the original plan;
+// newPlan is non-null because it was persisted when
+// the previous transaction was committed;
+tx.commit();
+session.close();
+
+21 
+Hibernate.class
+public static void initialize(Object proxy) throws HibernateException
+
+Force initialization of a proxy or persistent collection.
+Note: This only ensures intialization of a proxy object or collection; it is not guaranteed that 
+the elements INSIDE the collection will be initialized/materialized.
+
+22
+A Session will not obtain a JDBC
+Connection, or a Datasource, unless it is needed. It will not consume any resources until used
+
+23 session-per-request-with-detached-objects vs session-per-conversation
+
+You have to use several database transactions to implement the conversation. In this case,
+maintaining isolation of business processes becomes the partial responsibility of the application
+tier. A single conversation usually spans several database transactions. It will be atomic if only one
+of these database transactions (the last one) stores the updated data. All others simply read data
+(for example, in a wizard-style dialog spanning several request/response cycles). This is easier
+to implement than it might sound, especially if you utilize some of Hibernate's features:
+
+• Automatic Versioning: Hibernate can perform automatic optimistic concurrency control for you.
+It can automatically detect if a concurrent modification occurred during user think time. Check
+for this at the end of the conversation.
+• Detached Objects: if you decide to use the session-per-request pattern, all loaded instances
+will be in the detached state during user think time. Hibernate allows you to reattach the objects
+and persist the modifications. The pattern is called session-per-request-with-detached-objects.
+Automatic versioning is used to isolate concurrent modifications.
+• Extended (or Long) Session: the Hibernate Session can be disconnected from the underlying
+JDBC connection after the database transaction has been committed and reconnected when a
+new client request occurs. This pattern is known as session-per-conversation and makes even
+reattachment unnecessary. Automatic versioning is used to isolate concurrent modifications
+and the Session will not be allowed to be flushed automatically, but explicitly.
+
+24 Database Identity vs JVM Identity
+For objects attached to a particular Session (i.e., in the scope of a Session), the two notions
+are equivalent and JVM identity for database identity is guaranteed by Hibernate. While the
+application might concurrently access the "same" (persistent identity) business object in two
+different sessions, the two instances will actually be "different" (JVM identity). Conflicts are
+resolved using an optimistic approach and automatic versioning at flush/commit time.
+
+This approach leaves Hibernate and the database to worry about concurrency. It also provides
+the best scalability, since guaranteeing identity in single-threaded units of work means that it does
+not need expensive locking or other means of synchronization. The application does not need to
+synchronize on any business object, as long as it maintains a single thread per Session. Within
+a Session the application can safely use == to compare objects.
+
+25 
+The developer
+has to override the equals() and hashCode() methods in persistent classes and implement their
+own notion of object equality. There is one caveat: never use the database identifier to implement
+equality. Use a business key that is a combination of unique, usually immutable, attributes. The
+database identifier will change if a transient object is made persistent. If the transient instance
+(usually together with detached instances) is held in a Set, changing the hashcode breaks the
+contract of the Set. Attributes for business keys do not have to be as stable as database primary
+keys; you only have to guarantee stability as long as the objects are in the same Set. See the
+Hibernate website for a more thorough discussion of this issue. Please note that this is not a
+Hibernate issue, but simply how Java object identity and equality has to be implemented.
+
+26 common issues on session
+
+A Session is not thread-safe. Things that work concurrently, like HTTP requests, session beans,
+or Swing workers, will cause race conditions if a Session instance is shared. If you keep your
+Hibernate Session in your HttpSession (this is discussed later in the chapter), you should
+consider synchronizing access to your Http session. Otherwise, a user that clicks reload fast
+enough can use the same Session in two concurrently running threads.
+
+27
+当使用ORM的时候特别要注意的
+如果你使用ORM处理一些对象的话，你要确保在hashCode()和equals()对象中使用getter和setter而不是直接引用成员变量。
+因为在ORM中有的时候成员变量会被延时加载，这些变量只有当getter方法被调用的时候才真正可用。
+例如在我们的例子中，如果我们使用e1.id == e2.id则可能会出现这个问题，但是我们使用e1.getId() == e2.getId()就不会出现这个问题。
+
+28
+Ending a Session usually involves four distinct phases:
+• flush the session
+• commit the transaction
+• close the session
+• handle exceptions
+
+29 
+
+When configuring Hibernate's transaction factory, choose
+org.hibernate.transaction.JTATransactionFactory if you use JTA directly (BMT),
+and org.hibernate.transaction.CMTTransactionFactory in a CMT session bean.
+Remember to also set hibernate.transaction.manager_lookup_class. Ensure that your
+hibernate.current_session_context_class is either unset (backwards compatibility), or is set
+to "jta".
+
+The getCurrentSession() operation has one downside in a JTA environment. There is one
+caveat to the use of after_statement connection release mode, which is then used by default.
+Due to a limitation of the JTA spec, it is not possible for Hibernate to automatically clean up
+any unclosed ScrollableResults or Iterator instances returned by scroll() or iterate().
+You must release the underlying database cursor by calling ScrollableResults.close() or
+Hibernate.close(Iterator) explicitly from a finally block. Most applications can easily avoid
+using scroll() or iterate() from the JTA or CMT code.)
+

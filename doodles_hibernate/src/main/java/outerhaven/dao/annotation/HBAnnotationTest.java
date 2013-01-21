@@ -15,7 +15,8 @@ public class HBAnnotationTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		testHybridHBPlainMapping();
+//		testHybridHBPlainMapping();
+		testHBAnnotation();
 	}
 	public static void testHBAnnotation(){
 		try{
@@ -31,9 +32,9 @@ public class HBAnnotationTest {
 //			val.setId(2l);
 //			val.setDisplayValue("haha");
 			EntityChild1 child = new EntityChild1();
-			child.setId(5l);
-			child.setDisplayValue("hah child");
-			child.setName("child1");
+			child.setId(6l);
+			child.setDisplayValue("hah child again");
+			child.setName("child6");
 			session.save(child);
 			tran.commit();
 			session.close();
@@ -53,9 +54,9 @@ public class HBAnnotationTest {
 			Session session = sf.openSession();
 			Transaction tran=session.beginTransaction();
 			EntityChild2 child = new EntityChild2();
-			child.setId(9l);
-			child.setDisplayValue("hah child");
-			child.setComment("hahah");
+			child.setId(10l);
+			child.setDisplayValue("hah child again");
+			child.setComment("hahah again");
 			session.save(child);
 			tran.commit();
 			session.close();
