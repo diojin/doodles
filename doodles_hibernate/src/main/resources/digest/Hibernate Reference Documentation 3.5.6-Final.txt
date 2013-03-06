@@ -27,16 +27,6 @@ method is not intended for production use.
 automatic dirty checking
 session write-behind
 
-6, inverse mapping attribute
-What about the inverse mapping attribute? For you, and for Java, a bi-directional link is simply
-a matter of setting the references on both sides correctly. Hibernate, however, does not have
-enough information to correctly arrange SQL INSERT and UPDATE statements (to avoid constraint
-violations). Making one side of the association inverse tells Hibernate to consider it a mirror
-of the other side. That is all that is necessary for Hibernate to resolve any issues that arise
-when transforming a directional navigation model to a SQL database schema. The rules are
-straightforward: all bi-directional associations need one side as inverse. In a one-to-many
-association it has to be the many-side, and in many-to-many association you can select either side.
-
 7, status 
 transient
 The instance is not associated with any persistence context. It has no persistent identity or
@@ -95,7 +85,7 @@ the HashSet with an instance of Hibernate's own implementation of Set.
 
 Collections instances have the usual behavior of value types. They are automatically persisted
 when referenced by a persistent object and are automatically deleted when unreferenced. If a
-collection is passed from one persistent object to another, its ele	ments might be moved from one
+collection is passed from one persistent object to another, its elements might be moved from one
 table to another. Two entities cannot share a reference to the same collection instance. Due to
 the underlying relational model, collection-valued properties do not support null value semantics.
 Hibernate does not distinguish between a null collection reference and an empty collection.
@@ -119,11 +109,21 @@ If the foreign key column of a <one-to-many> association is declared NOT NULL,
 you must declare the <key> mapping not-null="true" or use a bidirectional
 association with the collection mapping marked inverse="true".
 
+6, inverse mapping attribute
+What about the inverse mapping attribute? For you, and for Java, a bi-directional link is simply
+a matter of setting the references on both sides correctly. Hibernate, however, does not have
+enough information to correctly arrange SQL INSERT and UPDATE statements (to avoid constraint
+violations). Making one side of the association inverse tells Hibernate to consider it a mirror
+of the other side. That is all that is necessary for Hibernate to resolve any issues that arise
+when transforming a directional navigation model to a SQL database schema. The rules are
+straightforward: all bi-directional associations need one side as inverse. In a one-to-many
+association it has to be the many-side, and in many-to-many association you can select either side.
+
 14,
 Changes made only to the inverse end of the association are not persisted. This means that
 Hibernate has two representations in memory for every bidirectional association: one link from A
 to B and another link from B to A. This is easier to understand if you think about the Java object
-model and how a many-to-many relationship in Javais created
+model and how a many-to-many relationship in Java is created
 
 The non-inverse side is used to save the in-memory representation to the database
 
@@ -139,6 +139,8 @@ identifier ( e.g. "identity" generator, not "sequence"), this INSERT happens imm
 matter if you are inside or outside of a transaction. This is problematic in a long-running
 conversation with an extended Session/persistence context.
 
+• load() & get()
+
 Be aware that load() will throw an unrecoverable exception if there is no matching database
 row. If the class is mapped with a proxy, load() just returns an uninitialized proxy and does not
 actually hit the database until you invoke a method of the proxy. This is useful if you wish to create
@@ -148,6 +150,7 @@ instances to be loaded as a batch if batch-size is defined for the class mapping
 If you are not certain that a matching row exists, you should use the get() method which hits the
 database immediately and returns null if there is no matching row.
 
+• refresh()
 It is possible to re-load an object and all its collections at any time, using the refresh() method.
 This is useful when database triggers are used to initialize some of the properties of the object.
 
@@ -179,19 +182,19 @@ consideration of the state of the session. In other words, update() is usually t
 would call in a fresh session, ensuring that the reattachment of your detached instances is the
 first operation that is executed.
 
-update
+update -----? what happens if to update a transient object  
 Update the persistent instance with the identifier of the given detached instance. If there is a 
 persistent instance with the same identifier, an exception is thrown. This operation cascades to 
 associated instances if the association is mapped with cascade="save-update".
 
-merge
+merge  
 Copy the state of the given object onto the persistent object with the same identifier. If there is 
 no persistent instance currently associated with the session, it will be loaded. Return the persistent 
 instance. If the given instance is unsaved, save a copy of and return it as a newly persistent instance. 
 The given instance does not become associated with the session. This operation cascades to associated 
 instances if the association is mapped with cascade="merge".
 
-lock
+lock   -----? whethere a transient or detached object is able to be locked
 Obtain the specified lock level upon the given object. This may be used to perform a version check (LockMode.READ), 
 to upgrade to a pessimistic lock (LockMode.PESSIMISTIC_WRITE), or to simply reassociate a transient 
 instance with a session (LockMode.NONE). This operation cascades to associated instances if the 
@@ -393,8 +396,8 @@ Note: This only ensures intialization of a proxy object or collection; it is not
 the elements INSIDE the collection will be initialized/materialized.
 
 22
-A Session will not obtain a JDBC
-Connection, or a Datasource, unless it is needed. It will not consume any resources until used
+A Session will not obtain a JDBC Connection, or a Datasource, unless it is needed. 
+It will not consume any resources until used
 
 23 session-per-request-with-detached-objects vs session-per-conversation
 
