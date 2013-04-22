@@ -29,16 +29,21 @@ public class TestDao {
 	private HibernateTemplate hibernateTemplate;
 	
 	public static void main(String[] args) {
-//		logger.info(test4());
 			
-//		Department de = test8();
+//		Department de = one2ManyHQL1();
 //		logger.debug("size:\t"+ de.getEmployees()==null);
-//		m2mSaveTest();
-		
+//		one2ManyHQL2();
+//		one2ManyQueryIterate();
+//		one2ManyQueryList();
+//		one2ManyCriteriaList();
+//		one2ManyHQL3ObjectList();
+//		one2ManyHibernateTemplate();
+//		m2mSaveTest();		
 //		m2mLoadTest();
-		testOne2ManySave();
-//		testOne2ManyDelete();
+//		testOne2ManySave();
+//		testOne2ManyDelete();		
 //		testOne2ManyDelete2();
+//		viewSupport();
 	}
 	public static void m2mLoadTest(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -79,33 +84,33 @@ public class TestDao {
 		session.flush();
 	}
 	
-	public static Department test8(){
+	public static Department one2ManyHQL1(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
-		Query query = session.createQuery("from Department");
+		Query query = session.createQuery("from Department");	
 		Department dep = null;
 		for( Iterator<Department> it = query.iterate(); it.hasNext();  ){
 			dep=it.next();
-			logger.debug(dep);
+			logger.debug(dep.getDeptname());
 		}		
 		session.close();
 		return dep;
 	}
-	public static Department test7(){
+	public static Department one2ManyHQL2(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
-		Query query = session.createQuery("select de from Department de inner join de.employees em where em.empname = 'dio'");
+		Query query = session.createQuery("select de from Department de inner join de.employees em where em.empname = 'haijian1'");
 		Department dep = null;
 		for( Iterator<Department> it = query.iterate(); it.hasNext();  ){
 			dep=it.next();
-			logger.debug(dep);
+			logger.debug(dep.getDeptname());
 		}
 		session.close();
 		return dep;
 	}
-	public static void test6(){
+	public static void viewSupport(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
@@ -115,18 +120,25 @@ public class TestDao {
 			logger.debug(it.next());
 		}
 	}
-	// compare list() and iterator()
-	public static void test5(){
+	/*
+	 * compare list() and iterator()
+	 * iterator() issues N+1 calls, one for ids, the N for each row corresponding 
+	 * to the id
+	 */
+	public static void one2ManyQueryIterate(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Query query =session.createQuery("from Employee");
 		for (Iterator<Employee> it = query.iterate(); it.hasNext();){
-			logger.debug(it.next());
+			logger.debug(it.next().getEmpname());
 		}		
 	}
-	// compare list() and iterator()
-	public static String test4(){
+	/*
+	 * compare list() and iterator()
+	 * list() doesn't have the N+1 problem
+	 */
+	public static String one2ManyQueryList(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
@@ -134,21 +146,25 @@ public class TestDao {
 		List<Employee> rs = query.list();
 		StringBuffer buf = new StringBuffer();
 		for (Iterator<Employee> it = rs.iterator(); it.hasNext();){
-			buf.append(it.next());			
+			buf.append(it.next().getEmpname());
 		}		
 		return buf.toString();
 	}
-	public static void test3(){
+	public static void one2ManyCriteriaList(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Criteria cri = session.createCriteria(Employee.class);
 		List<Employee> rs = cri.list();
 		for ( Iterator<Employee> it = rs.iterator();it.hasNext(); ){
-			logger.debug(it.next());			
+			logger.debug(it.next().getEmpname());			
 		}				
 	}
-	public static void test2(){
+	/*
+	 * iterate doesn't have N+1 queries problem 
+	 * if a lists of column are specified as select part 
+	 */
+	public static void one2ManyHQL3ObjectList(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
@@ -158,18 +174,17 @@ public class TestDao {
 			logger.debug(rs[1]);
 		}
 	}
-	// only work with lazy="false"
-	public static void test1(){
+	/*
+	 * only work with lazy="false"
+	 * session is closed after getHibernateTemplate().find() call
+	 */
+	public static void one2ManyHibernateTemplate(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		List<Employee> rs = dao.getHibernateTemplate().find("from Employee");
 		for ( Iterator<Employee> it = rs.iterator();it.hasNext(); ){
 			logger.debug(it.next());			
 		}				
-//		List<Department> rs1=dao.getHibernateTemplate().find("from Department");
-//		for ( Iterator<Department> it =rs1.iterator(); it.hasNext();){
-//			logger.debug(it.next());
-//		}	
 	}
 	
 	public static void testOne2ManySave(){
@@ -177,33 +192,38 @@ public class TestDao {
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Department dept = new Department();
-		dept.setDeptname("haijian1");
+		dept.setDeptname("joy");
 		Employee emp = new Employee();
 		emp.setDepartment(dept);
-		emp.setEmpname("haijian1");
+		emp.setEmpname("diojin");
 		emp.setEmpage(0);
 		emp.setContext("haha");
 		dept.getEmployees().add(emp);
-		session.save(dept);
-		
+		session.save(dept);		
 	}
+	/*
+	 * 5 sqls are generated in this case
+	 */
 	public static void testOne2ManyDelete(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Department dept = new Department();
-		Department value =(Department)session.load(Department.class, 9);
+		Department value =(Department)session.load(Department.class, 18);
 		session.delete(value);
 		session.flush();
 		session.close();		
 	}
 	
+	/*
+	 * 5 sqls are generated in this case
+	 */	
 	public static void testOne2ManyDelete2(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Query q = session.createQuery("from Department where id = :id ");
-		q.setParameter("id", 8);
+		q.setParameter("id", 17);
 		Department dept = (Department)q.list().get(0);
 		session.delete(dept);
 		session.flush();
