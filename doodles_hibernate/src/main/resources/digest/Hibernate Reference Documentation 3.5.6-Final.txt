@@ -99,9 +99,9 @@ map entity associations.
 12
 A one-to-many association links the tables of two classes via a foreign key with no intervening
 collection table. This mapping loses certain semantics of normal Java collections:
-• An instance of the contained entity class cannot belong to more than one instance of the
+鈥�An instance of the contained entity class cannot belong to more than one instance of the
 collection.
-• An instance of the contained entity class cannot appear at more than one value of the collection
+鈥�An instance of the contained entity class cannot appear at more than one value of the collection
 index.
 
 13.
@@ -129,17 +129,17 @@ The non-inverse side is used to save the in-memory representation to the databas
 
 15, hibernate APIs
 
-• persist() makes a transient instance persistent. However, it does not guarantee that the
+鈥�persist() makes a transient instance persistent. However, it does not guarantee that the
 identifier value will be assigned to the persistent instance immediately, the assignment might
 happen at flush time. persist() also guarantees that it will not execute an INSERT statement
 if it is called outside of transaction boundaries. This is useful in long-running conversations with
 an extended Session/persistence context.
-• save() does guarantee to return an identifier. If an INSERT has to be executed to get the
+鈥�save() does guarantee to return an identifier. If an INSERT has to be executed to get the
 identifier ( e.g. "identity" generator, not "sequence"), this INSERT happens immediately, no
 matter if you are inside or outside of a transaction. This is problematic in a long-running
 conversation with an extended Session/persistence context.
 
-• load() & get()
+鈥�load() & get()
 
 Be aware that load() will throw an unrecoverable exception if there is no matching database
 row. If the class is mapped with a proxy, load() just returns an uninitialized proxy and does not
@@ -150,7 +150,7 @@ instances to be loaded as a batch if batch-size is defined for the class mapping
 If you are not certain that a matching row exists, you should use the get() method which hits the
 database immediately and returns null if there is no matching row.
 
-• refresh()
+鈥�refresh()
 It is possible to re-load an object and all its collections at any time, using the refresh() method.
 This is useful when database triggers are used to initialize some of the properties of the object.
 
@@ -211,21 +211,21 @@ sess.lock(izi, LockMode.READ);
 sess.lock(pk, LockMode.UPGRADE);
 
 saveOrUpdate() does the following:
-• if the object is already persistent in this session, do nothing
-• if another object associated with the session has the same identifier, throw an exception
-• if the object has no identifier property, save() it
-• if the object's identifier has the value assigned to a newly instantiated object, save() it
-• if the object is versioned by a <version> or <timestamp>, and the version property value is the
+鈥�if the object is already persistent in this session, do nothing
+鈥�if another object associated with the session has the same identifier, throw an exception
+鈥�if the object has no identifier property, save() it
+鈥�if the object's identifier has the value assigned to a newly instantiated object, save() it
+鈥�if the object is versioned by a <version> or <timestamp>, and the version property value is the
 same value assigned to a newly instantiated object, save() it
-• otherwise update() the object
+鈥�otherwise update() the object
 
 merge() is very different:
-• if there is a persistent instance with the same identifier currently associated with the session,
+鈥�if there is a persistent instance with the same identifier currently associated with the session,
 copy the state of the given object onto the persistent instance
-• if there is no persistent instance currently associated with the session, try to load it from the
+鈥�if there is no persistent instance currently associated with the session, try to load it from the
 database, or create a new persistent instance
-• the persistent instance is returned
-• the given instance does not become associated with the session, it remains detached
+鈥�the persistent instance is returned
+鈥�the given instance does not become associated with the session, it remains detached
 
 evict()
 Remove this instance from the session cache. Changes to the instance will not be synchronized with 
@@ -238,9 +238,9 @@ you can get a JDBC Connection at any time by calling session.connection().
 
 17 Flushing the Session
 
-• before some query executions
-• from org.hibernate.Transaction.commit()
-• from Session.flush()
+鈥�before some query executions
+鈥�from org.hibernate.Transaction.commit()
+鈥�from Session.flush()
 
 The SQL statements are issued in the following order:
 
@@ -307,11 +307,11 @@ that the delete() operation should be applied to any child object that is remove
 association.
 
 Recommendations:
-• It does not usually make sense to enable cascade on a <many-to-one> or <many-to-many>
+鈥�It does not usually make sense to enable cascade on a <many-to-one> or <many-to-many>
 association. Cascade is often useful for <one-to-one> and <one-to-many> associations.
-• If the child object's lifespan is bounded by the lifespan of the parent object, make it a life cycle
+鈥�If the child object's lifespan is bounded by the lifespan of the parent object, make it a life cycle
 object by specifying cascade="all,delete-orphan".
-• Otherwise, you might not need cascade at all. But if you think that you will often be working with
+鈥�Otherwise, you might not need cascade at all. But if you think that you will often be working with
 the parent and children together in the same transaction, and you want to save yourself some
 typing, consider using cascade="persist,merge,save-update".
 
@@ -321,14 +321,14 @@ is not automatically deleted, except in the case of a <one-to-many> association 
 cascade="delete-orphan". The precise semantics of cascading operations for a parent/child
 relationship are as follows:
 
-• If a parent is passed to persist(), all children are passed to persist()
-• If a parent is passed to merge(), all children are passed to merge()
-• If a parent is passed to save(), update() or saveOrUpdate(), all children are passed to
+鈥�If a parent is passed to persist(), all children are passed to persist()
+鈥�If a parent is passed to merge(), all children are passed to merge()
+鈥�If a parent is passed to save(), update() or saveOrUpdate(), all children are passed to
 saveOrUpdate()
-• If a transient or detached child becomes referenced by a persistent parent, it is passed to
+鈥�If a transient or detached child becomes referenced by a persistent parent, it is passed to
 saveOrUpdate()
-• If a parent is deleted, all children are passed to delete()
-• If a child is dereferenced by a persistent parent, nothing special happens - the application should
+鈥�If a parent is deleted, all children are passed to delete()
+鈥�If a child is dereferenced by a persistent parent, nothing special happens - the application should
 explicitly delete the child if necessary - unless cascade="delete-orphan", in which case the
 "orphaned" child is deleted.
 
@@ -340,17 +340,17 @@ reachable during flush of the Session.
 20 read-only entities
 
 When an entity is read-only:
-• Hibernate does not dirty-check the entity's simple properties or single-ended associations;
-• Hibernate will not update simple properties or updatable single-ended associations;
-• Hibernate will not update the version of the read-only entity if only simple properties or singleended
+鈥�Hibernate does not dirty-check the entity's simple properties or single-ended associations;
+鈥�Hibernate will not update simple properties or updatable single-ended associations;
+鈥�Hibernate will not update the version of the read-only entity if only simple properties or singleended
 updatable associations are changed;
 
 We use the term unidirectional single-ended association when referring to functionality that is
 common to unidirectional one-to-one and many-to-one associations.
 
 Hibernate does some optimizing for read-only entities:
-• It saves execution time by not dirty-checking simple properties or single-ended associations.
-• It saves memory by deleting database snapshots.
+鈥�It saves execution time by not dirty-checking simple properties or single-ended associations.
+鈥�It saves memory by deleting database snapshots.
 
 To throw away non-flushed changes and make the persistent entity consistent with its database
 representation, call:
@@ -408,14 +408,14 @@ of these database transactions (the last one) stores the updated data. All other
 (for example, in a wizard-style dialog spanning several request/response cycles). This is easier
 to implement than it might sound, especially if you utilize some of Hibernate's features:
 
-• Automatic Versioning: Hibernate can perform automatic optimistic concurrency control for you.
+鈥�Automatic Versioning: Hibernate can perform automatic optimistic concurrency control for you.
 It can automatically detect if a concurrent modification occurred during user think time. Check
 for this at the end of the conversation.
-• Detached Objects: if you decide to use the session-per-request pattern, all loaded instances
+鈥�Detached Objects: if you decide to use the session-per-request pattern, all loaded instances
 will be in the detached state during user think time. Hibernate allows you to reattach the objects
 and persist the modifications. The pattern is called session-per-request-with-detached-objects.
 Automatic versioning is used to isolate concurrent modifications.
-• Extended (or Long) Session: the Hibernate Session can be disconnected from the underlying
+鈥�Extended (or Long) Session: the Hibernate Session can be disconnected from the underlying
 JDBC connection after the database transaction has been committed and reconnected when a
 new client request occurs. This pattern is known as session-per-conversation and makes even
 reattachment unnecessary. Automatic versioning is used to isolate concurrent modifications
@@ -455,17 +455,17 @@ consider synchronizing access to your Http session. Otherwise, a user that click
 enough can use the same Session in two concurrently running threads.
 
 27
-当使用ORM的时候特别要注意的
-如果你使用ORM处理一些对象的话，你要确保在hashCode()和equals()对象中使用getter和setter而不是直接引用成员变量。
-因为在ORM中有的时候成员变量会被延时加载，这些变量只有当getter方法被调用的时候才真正可用。
-例如在我们的例子中，如果我们使用e1.id == e2.id则可能会出现这个问题，但是我们使用e1.getId() == e2.getId()就不会出现这个问题。
+褰撲娇鐢∣RM鐨勬椂鍊欑壒鍒娉ㄦ剰鐨�
+濡傛灉浣犱娇鐢∣RM澶勭悊涓�簺瀵硅薄鐨勮瘽锛屼綘瑕佺‘淇濆湪hashCode()鍜宔quals()瀵硅薄涓娇鐢╣etter鍜宻etter鑰屼笉鏄洿鎺ュ紩鐢ㄦ垚鍛樺彉閲忋�
+鍥犱负鍦∣RM涓湁鐨勬椂鍊欐垚鍛樺彉閲忎細琚欢鏃跺姞杞斤紝杩欎簺鍙橀噺鍙湁褰揼etter鏂规硶琚皟鐢ㄧ殑鏃跺�鎵嶇湡姝ｅ彲鐢ㄣ�
+渚嬪鍦ㄦ垜浠殑渚嬪瓙涓紝濡傛灉鎴戜滑浣跨敤e1.id == e2.id鍒欏彲鑳戒細鍑虹幇杩欎釜闂锛屼絾鏄垜浠娇鐢╡1.getId() == e2.getId()灏变笉浼氬嚭鐜拌繖涓棶棰樸�
 
 28
 Ending a Session usually involves four distinct phases:
-• flush the session
-• commit the transaction
-• close the session
-• handle exceptions
+鈥�flush the session
+鈥�commit the transaction
+鈥�close the session
+鈥�handle exceptions
 
 29 
 
@@ -483,4 +483,188 @@ any unclosed ScrollableResults or Iterator instances returned by scroll() or ite
 You must release the underlying database cursor by calling ScrollableResults.close() or
 Hibernate.close(Iterator) explicitly from a finally block. Most applications can easily avoid
 using scroll() or iterate() from the JTA or CMT code.)
+
+30. 
+
+Hibernate3 provides support for queries via stored procedures and functions. The stored procedure/function must return a resultset as
+the first out-parameter to be able to work with Hibernate.
+
+31. Hibernate3 defines the following fetching strategies:
+• Join fetching: Hibernate retrieves the associated instance or collection in the same SELECT,
+using an OUTER JOIN.
+• Select fetching: a second SELECT is used to retrieve the associated entity or collection. Unless
+you explicitly disable lazy fetching by specifying lazy="false", this second select will only be
+executed when you access the association.
+• Subselect fetching: a second SELECT is used to retrieve the associated collections for all entities
+retrieved in a previous query or fetch. Unless you explicitly disable lazy fetching by specifying
+lazy="false", this second select will only be executed when you access the association.
+• Batch fetching: an optimization strategy for select fetching. Hibernate retrieves a batch of entity
+instances or collections in a single SELECT by specifying a list of primary or foreign keys.
+
+Hibernate also distinguishes between:
+
+• Immediate fetching: an association, collection or attribute is fetched immediately when the
+owner is loaded.
+• Lazy collection fetching: a collection is fetched when the application invokes an operation upon
+that collection. This is the default for collections.
+• "Extra-lazy" collection fetching: individual elements of the collection are accessed from the
+database as needed. Hibernate tries not to fetch the whole collection into memory unless
+absolutely needed. It is suitable for large collections.
+• Proxy fetching: a single-valued association is fetched when a method other than the identifier
+getter is invoked upon the associated object.
+• "No-proxy" fetching: a single-valued association is fetched when the instance variable is
+accessed. Compared to proxy fetching, this approach is less lazy; the association is fetched
+even when only the identifier is accessed. It is also more transparent, since no proxy is visible
+to the application. This approach requires buildtime bytecode instrumentation and is rarely
+necessary.
+• Lazy attribute fetching: an attribute or single valued association is fetched when the instance
+variable is accessed. This approach requires buildtime bytecode instrumentation and is rarely
+necessary.
+
+32 Fetching strategies & Working with lazy associations
+
+By default, Hibernate3 uses lazy select fetching for collections and lazy proxy fetching for
+single-valued associations. These defaults make sense for most associations in the majority of
+applications.
+If you set hibernate.default_batch_fetch_size, Hibernate will use the batch fetch
+optimization for lazy fetching. This optimization can also be enabled at a more granular level.
+
+On the other hand, you can use join fetching, which is non-lazy by nature, instead of select
+fetching in a particular transaction. We will now explain how to customize the fetching strategy.
+In Hibernate3, the mechanisms for choosing a fetch strategy are identical for single-valued
+associations and collections
+
+33 N+1 selects problems
+Select fetching (the default) is extremely vulnerable to N+1 selects problems, so we might want
+to enable join fetching in the mapping document
+A completely different approach to problems with N+1 selects is to use the second-level cache
+
+34 Single-ended association proxies
+Lazy fetching for collections is implemented using Hibernate's own implementation of persistent
+collections. However, a different mechanism is needed for lazy behavior in single-ended
+associations. The target entity of the association must be proxied. Hibernate implements lazy
+initializing proxies for persistent objects using runtime bytecode enhancement which is accessed
+via the CGLIB library.
+
+The mapping file may declare an interface to use as the proxy interface for that class, with
+the proxy attribute. By default, Hibernate uses a subclass of the class. The proxied class must
+implement a default constructor with at least package visibility. This constructor is recommended
+for all persistent classes.
+
+you cannot use a CGLIB proxy for a final class or a class with any final methods.
+
+35
+Certain operations do not require proxy initialization:
+• equals(): if the persistent class does not override equals()
+• hashCode(): if the persistent class does not override hashCode()
+• The identifier getter method
+
+36
+The static methods Hibernate.initialize() and Hibernate.isInitialized(), provide the
+application with a convenient way of working with lazily initialized collections or proxies.
+Hibernate.initialize(cat) will force the initialization of a proxy, cat, as long as its Session is
+still open. Hibernate.initialize( cat.getKittens() ) has a similar effect for the collection
+of kittens.
+
+37.
+You can count the number of query results without returning them:
+( (Integer) session.createQuery("select count(*) from ....").iterate().next() ).intValue()
+
+Sometimes you do not want to initialize a large collection, but still need some information about
+it, like its size, for example, or a subset of the data.
+
+You can use a collection filter to get the size of a collection without initializing it
+( (Integer) s.createFilter( collection, "select count(*)" ).list().get(0) ).intValue()
+
+The createFilter() method is also used to efficiently retrieve subsets of a collection without
+needing to initialize the whole collection
+s.createFilter( lazyCollection, "").setFirstResult(0).setMaxResults(10).list();
+
+38.
+Using batch fetching, Hibernate can load several uninitialized proxies if one proxy is accessed.
+Batch fetching is an optimization of the lazy select fetching strategy. There are two ways you can
+configure batch fetching: on the class level and the collection level.
+
+Batch fetching for classes/entities is easier to understand. Consider the following example: at
+runtime you have 25 Cat instances loaded in a Session, and each Cat has a reference to its owner,
+a Person. The Person class is mapped with a proxy, lazy="true". If you now iterate through
+all cats and call getOwner() on each, Hibernate will, by default, execute 25 SELECT statements
+to retrieve the proxied owners. You can tune this behavior by specifying a batch-size in the
+mapping of Person:
+<class name="Person" batch-size="10">...</class>
+Hibernate will now execute only three queries: the pattern is 10, 10, 5.
+
+You can also enable batch fetching of collections. For example, if each Person has a lazy collection
+of Cats, and 10 persons are currently loaded in the Session, iterating through all persons will
+generate 10 SELECTs, one for every call to getCats(). If you enable batch fetching for the cats
+collection in the mapping of Person, Hibernate can pre-fetch collections
+
+<class name="Person">
+<set name="cats" batch-size="3">
+...
+</set>
+</class>
+With a batch-size of 3, Hibernate will load 3, 3, 3, 1 collections in four SELECTs. Again, the value
+of the attribute depends on the expected number of uninitialized collections in a particular Session.
+
+39 Using subselect fetching
+If one lazy collection or single-valued proxy has to be fetched, Hibernate will load all of them,
+re-running the original query in a subselect. This works in the same way as batch-fetching but
+without the piecemeal loading.
+
+40 Understanding Collection performance
+To fully understand the relational
+structure and performance characteristics, we must also consider the structure of the primary
+key that is used by Hibernate to update or delete collection rows. This suggests the following
+classification:
+• indexed collections
+• sets
+• bags
+
+All indexed collections (maps, lists, and arrays) have a primary key consisting of the <key> and
+<index> columns. In this case, collection updates are extremely efficient. The primary key can be
+efficiently indexed and a particular row can be efficiently located when Hibernate tries to update
+or delete it.
+
+<idbag> mappings define a surrogate key, so they are efficient to update. In fact, they are the
+best case.
+
+Bags are the worst case since they permit duplicate element values and, as they have no index
+column, no primary key can be defined. Hibernate has no way of distinguishing between duplicate
+rows. Hibernate resolves this problem by completely removing in a single DELETE and recreating
+the collection whenever it changes. This can be inefficient
+
+Sets have a primary key consisting of <key> and element columns. This can be less efficient for
+some types of collection element, particularly composite elements or large text or binary fields, as
+the database may not be able to index a complex primary key as efficiently. However, for one-tomany
+or many-to-many associations, particularly in the case of synthetic identifiers, it is likely to
+be just as efficient. If you want SchemaExport to actually create the primary key of a <set>, you
+must declare all columns as not-null="true".
+
+From the discussion above, it should be clear that indexed collections and sets allow the most
+efficient operation in terms of adding, removing and updating elements.
+
+After observing that arrays cannot be lazy, you can conclude that lists, maps and idbags are the
+most performant (non-inverse) collection types, with sets not far behind. You can expect sets to be
+the most common kind of collection in Hibernate applications. This is because the "set" semantics
+are most natural in the relational model
+
+However, in well-designed Hibernate domain models, most collections are in fact one-to-many
+associations with inverse="true". For these associations, the update is handled by the manyto-
+one end of the association, and so considerations of collection update performance simply do
+not apply.
+
+40.1 Bags and lists are the most efficient inverse collections
+
+There is a particular case, however, in which bags, and also lists, are much more performant than
+sets. For a collection with inverse="true", the standard bidirectional one-to-many relationship
+idiom, for example, we can add elements to a bag or list without needing to initialize (fetch) the
+bag elements. This is because, unlike a set, Collection.add() or Collection.addAll() must
+always return true for a bag or List. This can make the following common code much faster:
+
+Parent p = (Parent) sess.load(Parent.class, id);
+Child c = new Child();
+c.setParent(p);
+p.getChildren().add(c); //no need to fetch the collection!
+sess.flush();
 
