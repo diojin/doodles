@@ -39,7 +39,7 @@ public class TestDao {
 //		one2ManyHQL3ObjectList();
 //		one2ManyHibernateTemplate();
 //		m2mSaveTest();		
-//		m2mLoadTest();
+		m2mLoadTest();
 //		testOne2ManySave();
 //		testOne2ManyDelete();		
 //		testOne2ManyDelete2();
