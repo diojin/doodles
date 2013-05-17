@@ -28,6 +28,7 @@ public class TestDao {
 	private SessionFactory sessionFactory;
 	private HibernateTemplate hibernateTemplate;
 	
+	
 	public static void main(String[] args) {
 			
 //		Department de = one2ManyHQL1();
@@ -39,12 +40,68 @@ public class TestDao {
 //		one2ManyHQL3ObjectList();
 //		one2ManyHibernateTemplate();
 //		m2mSaveTest();		
-		m2mLoadTest();
+//		m2mLoadTest();
 //		testOne2ManySave();
 //		testOne2ManyDelete();		
 //		testOne2ManyDelete2();
 //		viewSupport();
+		testHQL();
+//		testHQL1();
 	}
+	
+	public static void testHQL(){
+		String queryString = null;
+		List result = null;
+		queryString = "from Employee";
+		/*
+		 * straightforward inner join
+		 */
+		queryString = "from Employee emp inner join emp.department dept";
+		/*
+		 * "with" part in hibernate will be converted into join on conditions,
+		 * but rather where condition
+		 */
+		queryString = "from Employee as emp inner join emp.department as dept with dept.deptname > 'dept2'";
+		/*
+		 * cartesian product, for non related tables
+		 * return type is List<Object[]>, 2 separate objects in Object[] arrays, 
+		 * 1 Employee, 1 EntityChild2
+		 */
+		queryString = "from Employee emp, EntityChild2 ent";
+		/*
+		 * following 2 queries use same sql query, department is fetched whatever the lasy setting
+		 * return type is diffent, 1st one is List<Object[]>, 2nd is List<Employee>
+		 * it is not as what hibernate reference 3.5 told
+		 * 
+		 */
+		queryString = "from Employee emp inner join emp.department dept";
+		queryString = "from Employee emp inner join fetch emp.department dept";
+				
+		result = findByHQL(queryString);
+	}
+	
+	/*
+	 * Test HQL 1:
+	 * from Employee emp inner join emp.department dept
+	 */
+	public static void testHQL1() {
+		String queryString = "from Employee emp inner join emp.department dept";
+		List<Object[]> results = findByHQL(queryString);
+		for ( Object[] innerResult: results ){
+			logger.info(innerResult[0]);
+		}
+	}
+	
+	public static List findByHQL(String queryString ) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		TestDao dao=(TestDao)ctx.getBean("testDao");
+		Session session = dao.getSessionFactory().openSession();
+		List result = null;
+		Query query = session.createQuery(queryString);
+		result = query.list();
+		return result;		
+	}
+	 
 	public static void m2mLoadTest(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao=(TestDao)ctx.getBean("testDao");

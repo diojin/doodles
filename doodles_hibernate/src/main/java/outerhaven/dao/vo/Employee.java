@@ -2,13 +2,12 @@ package outerhaven.dao.vo;
 
 public class Employee {
 	public String toString(){
-		return String.format("[%s\t%s\t%s\t%s\t%s\t%s]", 
+		return String.format("[%s\t%s\t%s\t%s\t%s]", 
 				this.id,
 				this.empname,
 				this.empage,
 				this.context,
-				this.deptid,
-				this.department);
+				this.deptid);
 	}
 	public Integer getId() {
 		return id;

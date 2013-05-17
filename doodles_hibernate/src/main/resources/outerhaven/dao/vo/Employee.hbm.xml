@@ -11,6 +11,6 @@
         <property name="empage" type="int" />
 		<property name="context" type="string" />
 		<property name="deptid" type="int" insert="false" update="false"/>
-		<many-to-one name="department" column="deptid" fetch="select" cascade="all" class="Department" />
+		<many-to-one name="department" column="deptid" fetch="join" cascade="all" class="Department" />
     </class>
 </hibernate-mapping>
