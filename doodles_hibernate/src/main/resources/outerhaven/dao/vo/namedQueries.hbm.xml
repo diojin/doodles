@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <sql-query name="sqlQuerySimple">
+        <return alias="cat" class="outerhaven.dao.vo.Cat" />
+        select * from cats where name like :namePattern
+    </sql-query>
+    <!-- faile with Unknown entity: outerhaven.dao.vo.UnmappedCat -->
+    <!-- 
+    <sql-query name="sqlQuerySimpleUnmapped">
+        <return alias="cat" class="outerhaven.dao.vo.UnmappedCat" />
+        select * from cats where name like :namePattern
+    </sql-query>
+     -->
+    <sql-query name="sqlQuerySimpleJoin">
+        <return alias="cat" entity-name="outerhaven.dao.vo.Cat" />
+        <return-join alias="mother" property="cat.mother" />
+        select {cat.*}, {mother.*} from cats cat, cats mother
+        	where cat.mother_id=mother.id
+    </sql-query>
+    <!-- native sql DML --> 
+    <sql-query name="sqlQueryInsert">
+       insert into cats values ( 11, 'D', 12.44, sysdate(), 'test', 'F', null, 'test', 0 )        
+    </sql-query>
+	<sql-query name="sqlQueryScalar">
+	    <return-scalar column="id" type="long" />
+	    <return-scalar column="name" type="string" />
+	    select cat.id, cat.name from cats cat
+	</sql-query>
+</hibernate-mapping>

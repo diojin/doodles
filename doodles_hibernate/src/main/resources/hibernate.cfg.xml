@@ -28,5 +28,7 @@
         <mapping resource="outerhaven/dao/vo/Order.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/Item.hbm.xml"/>
         <mapping resource="outerhaven/dao/vo/EntityChild2.hbm.xml"/>
-    </session-factory>
+        <mapping resource="outerhaven/dao/vo/Kitty.hbm.xml"/>
+        <mapping resource="outerhaven/dao/vo/namedQueries.hbm.xml"/>        
+    </session-factory>    
 </hibernate-configuration>

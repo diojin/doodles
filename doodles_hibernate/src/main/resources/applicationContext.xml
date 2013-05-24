@@ -63,7 +63,7 @@
         class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
     	<!-- dataSource injection has to be commented out so that p6spy driver won't be by passed by -->
     	<!-- alternative to p6spy is to set TRACE level to org.hibernate.SQL & org.hibernate.type -->
-        <!-- <property name="dataSource" ref="dataSource" /> -->
+        <property name="dataSource" ref="dataSource" />
         <property name="configLocations">
             <list>
                 <value>classpath:hibernate.cfg.xml</value>
