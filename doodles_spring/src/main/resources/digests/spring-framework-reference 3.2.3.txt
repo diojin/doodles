@@ -1,0 +1,252 @@
+1. However, the bean properties themselves are not set until the bean is actually created. Beans that are singleton-scoped and set
+to be pre-instantiated (the default) are created when the container is created. Otherwise, the bean is created only when it is requested.
+
+2. Spring sets properties and
+resolves dependencies as late as possible, when the bean is actually created. This means that a Spring
+container which has loaded correctly can later generate an exception when you request an object if there
+is a problem creating that object or one of its dependencies. For example, the bean throws an exception
+as a result of a missing or invalid property. This potentially delayed visibility of some configuration issues
+is why ApplicationContext implementations by default pre-instantiate singleton beans. At the cost
+of some upfront time and memory to create these beans before they are actually needed, you discover
+configuration issues when the ApplicationContext is created, not later. You can still override this
+default behavior so that singleton beans will lazy-initialize, rather than be pre-instantiated.
+
+3. ref attribute: bean/local/parent 
+The ref element is the final element inside a <constructor-arg/> or <property/> definition
+element. Scoping and validation depend on whether you specify the id/
+name of the other object through the bean,local, or parent attributes.
+
+a) bean
+Specifying the target bean through the bean attribute of the <ref/> tag is the most general form, and
+allows creation of a reference to any bean in the same container or parent container, regardless of
+whether it is in the same XML file. The value of the bean attribute may be the same as the id attribute
+of the target bean, or as one of the values in the name attribute of the target bean.
+
+b) local
+Specifying the target bean through the local attribute leverages the ability of the XML parser to validate
+XML id references within the same file. The value of the local attribute must be the same as the id
+attribute of the target bean. The XML parser issues an error if no matching element is found in the same
+file. As such, using the local variant is the best choice (in order to know about errors as early as possible)
+if the target bean is in the same XML file.
+
+c) parent
+Specifying the target bean through the parent attribute creates a reference to a bean that is in a parent
+container of the current container. The value of the parent attribute may be the same as either the id 
+attribute of the target bean, or one of the values in the name attribute of the target bean, and the target
+bean must be in a parent container of the current one. You use this bean reference variant mainly when
+you have a hierarchy of containers and you want to wrap an existing bean in a parent container with a
+proxy that will have the same name as the parent bean.
+
+
+4, 
+Spring treats empty arguments for properties and the like as empty Strings. The following XML-based
+configuration metadata snippet sets the email property to the empty String value ("")
+	<bean class="ExampleBean">
+		<property name="email" value=""/>
+	</bean>
+The preceding example is equivalent to the following Java code: exampleBean.setEmail(""). The
+<null/> element handles null values. For example:
+	<bean class="ExampleBean">
+		<property name="email"><null/></property>
+	</bean>
+	
+5 The idref element
+The idref element is simply an error-proof way to pass the id (string value - not a reference) of another
+bean in the container to a <constructor-arg/> or <property/> element.
+Form 1:
+<bean id="theTargetBean" class="..."/>
+<bean id="theClientBean" class="...">
+	<property name="targetName">
+		<idref bean="theTargetBean" />
+	</property>
+</bean>
+
+Form 2:
+<bean id="theTargetBean" class="..." />
+<bean id="client" class="...">
+	<property name="targetName" value="theTargetBean" />
+</bean>
+
+The first form is preferable to the second, because using the idref tag allows the container to validate at
+deployment time that the referenced, named bean actually exists. In the second variation, no validation
+is performed on the value that is passed to the targetName property of the client bean. Typos are
+only discovered (with most likely fatal results) when the client bean is actually instantiated. If the
+client bean is a prototype bean, this typo and the resulting exception may only be discovered long
+after the container is deployed.
+
+6. depends-on attribute 
+The depends-on attribute in the bean definition can specify both an initialization time
+dependency and, in the case of singleton beans only, a corresponding destroy time dependency.
+Dependent beans that define a depends-on relationship with a given bean are destroyed first,
+prior to the given bean itself being destroyed. Thus depends-on can also control shutdown
+order.
+
+7. lazy-init 
+A lazy-initialized bean tells the IoC container to create a
+bean instance when it is first requested, rather than at startup.
+In XML, this behavior is controlled by the lazy-init attribute on the <bean/> element; for example:
+<bean id="lazy" class="com.foo.ExpensiveToCreateBean" lazy-init="true"/>
+<bean name="not.lazy" class="com.foo.AnotherBean"/>
+
+8. Bean scopes
+
+singleton: 
+(Default) Scopes a single bean definition to a
+single object instance per Spring IoC container.
+
+prototype:
+Scopes a single bean definition to any number of
+object instances.
+
+In contrast to the other scopes, Spring does not manage the complete lifecycle of a prototype bean: the
+container instantiates, configures, and otherwise assembles a prototype object, and hands it to the client,
+with no further record of that prototype instance. Thus, although initialization lifecycle callback methods
+are called on all objects regardless of scope, in the case of prototypes, configured destruction lifecycle
+callbacks are not called. The client code must clean up prototype-scoped objects and release expensive
+resources that the prototype bean(s) are holding. To get the Spring container to release resources held
+by prototype-scoped beans, try using a custom bean post-processor, which holds a reference to beans
+that need to be cleaned up.
+
+request:
+Scopes a single bean definition to the lifecycle of a
+single HTTP request; that is, each HTTP request
+has its own instance of a bean created off the back
+of a single bean definition. Only valid in the context
+of a web-aware Spring ApplicationContext.
+
+session 
+Scopes a single bean definition to the lifecycle of
+an HTTP Session. Only valid in the context of a
+web-aware Spring ApplicationContext.
+
+global session 
+Scopes a single bean definition to the lifecycle of a
+global HTTP Session. Typically only valid when
+used in a portlet context. Only valid in the context
+of a web-aware Spring ApplicationContext.
+
+The Spring IoC container manages not only the instantiation of your objects (beans), but also the wiring
+up of collaborators (or dependencies). If you want to inject (for example) an HTTP request scoped bean
+into another bean, you must inject an AOP proxy in place of the scoped bean. That is, you need to inject
+a proxy object that exposes the same public interface as the scoped object but that can also retrieve
+the real, target object from the relevant scope (for example, an HTTP request) and delegate method
+calls onto the real object.
+
+You do not need to use the <aop:scoped-proxy/> in conjunction with beans that are scoped
+as singletons or prototypes.
+
+<!-- an HTTP Session-scoped bean exposed as a proxy -->
+<bean id="userPreferences" class="com.foo.UserPreferences" scope="session">
+	<!-- instructs the container to proxy the surrounding bean -->
+	<aop:scoped-proxy/>
+</bean>
+<!-- a singleton-scoped bean injected with a proxy to the above bean -->
+<bean id="userService" class="com.foo.SimpleUserService">
+	<!-- a reference to the proxied userPreferences bean -->
+	<property name="userPreferences" ref="userPreferences"/>
+</bean>
+
+9.Choosing the type of proxy to create
+
+By default, when the Spring container creates a proxy for a bean that is marked up with the
+<aop:scoped-proxy/> element, a CGLIB-based class proxy is created.
+
+Note: CGLIB proxies only intercept public method calls! Do not call non-public methods on such a proxy;
+they will not be delegated to the scoped target object.
+
+Alternatively, you can configure the Spring container to create standard JDK interface-based proxies
+for such scoped beans, by specifying false for the value of the proxy-target-class attribute of
+the <aop:scoped-proxy/> element. Using JDK interface-based proxies means that you do not need
+additional libraries in your application classpath to effect such proxying. However, it also means that the
+class of the scoped bean must implement at least one interface, and that all collaborators into which the
+scoped bean is injected must reference the bean through one of its interfaces.
+
+<bean id="userPreferences" class="com.foo.DefaultUserPreferences" scope="session">
+	<aop:scoped-proxy proxy-target-class="false"/>
+</bean>
+<bean id="userManager" class="com.foo.UserManager">
+	<property name="userPreferences" ref="userPreferences"/>
+</bean>
+
+10. Lifecycle callbacks
+
+To interact with the container's management of the bean lifecycle, you can implement
+the Spring InitializingBean and DisposableBean interfaces. The container calls
+afterPropertiesSet() for the former and destroy() for the latter to allow the bean to perform
+certain actions upon initialization and destruction of your beans.
+
+The JSR-250 @PostConstruct and @PreDestroy annotations are generally considered best
+practice for receiving lifecycle callbacks in a modern Spring application. Using these annotations
+means that your beans are not coupled to Spring specific interfaces. For details see the section
+called “@PostConstruct and @PreDestroy”.
+
+If you don't want to use the JSR-250 annotations but you are still looking to remove coupling
+consider the use of init-method and destroy-method object definition metadata.
+In the case of XML-based configuration metadata, you use the init-method
+attribute to specify the name of the method that has a void no-argument signature.
+
+The Spring container guarantees that a configured initialization callback is called immediately after
+a bean is supplied with all dependencies. Thus the initialization callback is called on the raw bean
+reference, which means that AOP interceptors and so forth are not yet applied to the bean. A target
+bean is fully created first, then an AOP proxy (for example) with its interceptor chain is applied. If the
+target bean and the proxy are defined separately, your code can even interact with the raw target bean,
+bypassing the proxy. Hence, it would be inconsistent to apply the interceptors to the init method, because
+doing so would couple the lifecycle of the target bean with its proxy/interceptors and leave strange
+semantics when your code interacts directly to the raw target bean.
+
+Multiple lifecycle mechanisms configured for the same bean, with different initialization methods, are
+called as follows:
+• Methods annotated with @PostConstruct
+• afterPropertiesSet() as defined by the InitializingBean callback interface
+• A custom configured init() method
+Destroy methods are called in the same order:
+• Methods annotated with @PreDestroy
+• destroy() as defined by the DisposableBean callback interface
+• A custom configured destroy() method
+
+11. BeanPostProcessor interface consists
+of exactly two callback methods. When such a class is registered as a post-processor with the container,
+for each bean instance that is created by the container, the post-processor gets a callback from the
+container both before container initialization methods (such as InitializingBean's afterPropertiesSet()
+and any declared init method) are called as well as after any bean initialization callbacks. The postprocessor
+can take any action with the bean instance, including ignoring the callback completely. A
+bean post-processor typically checks for callback interfaces or may wrap a bean with a proxy. Some
+Spring AOP infrastructure classes are implemented as bean post-processors in order to provide proxywrapping
+logic.
+
+An ApplicationContext automatically detects any beans that are defined in the configuration
+metadata which implement the BeanPostProcessor interface. The ApplicationContext registers
+these beans as post-processors so that they can be called later upon bean creation. Bean postprocessors
+can be deployed in the container just like any other beans.
+
+Classes that implement the BeanPostProcessor interface are special and are treated
+differently by the container. All BeanPostProcessors and beans that they reference directly
+are instantiated on startup, as part of the special startup phase of the ApplicationContext.
+Next, all BeanPostProcessors are registered in a sorted fashion and applied to all further
+beans in the container. Because AOP auto-proxying is implemented as a BeanPostProcessor
+itself, neither BeanPostProcessors nor the beans they reference directly are eligible for autoproxying,
+and thus do not have aspects woven into them.
+
+
+
+12.
+You can use the PropertyPlaceholderConfigurer to substitute class names, which is
+sometimes useful when you have to pick a particular implementation class at runtime. For
+example:
+
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<property name="locations">
+		<value>classpath:com/foo/strategy.properties</value>
+	</property>
+	<property name="properties">
+		<value>custom.strategy.class=com.foo.DefaultStrategy</value>
+	</property>
+</bean>
+<bean id="serviceStrategy" class="${custom.strategy.class}"/>
+
+13. FactoryBean
+When you need to ask a container for an actual FactoryBean instance itself instead of the bean
+it produces, preface the bean's id with the ampersand symbol (&) when calling the getBean()
+method of the ApplicationContext. So for a given FactoryBean with an id of myBean, invoking
+getBean("myBean") on the container returns the product of the FactoryBean; whereas, invoking
+getBean("&myBean") returns the FactoryBean instance itself.

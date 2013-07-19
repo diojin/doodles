@@ -1,5 +1,9 @@
 package outerhaven.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +21,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
@@ -24,6 +29,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.jdbc.Work;
+import org.hibernate.transform.Transformers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -65,7 +72,29 @@ public class TestDao {
 //		testHQL1();
 //		createFilterTest();
 //		testCriteria();
-		testSqlQuery();
+//		testSqlQuery();
+		testJdbcWork();
+	}
+	/*
+	 * another way to use native jdbc sql
+	 */
+	public static void testJdbcWork(){
+		Session session = getTestDaoInstance().getSessionFactory().openSession();
+		Transaction tran = session.beginTransaction();
+		tran.begin();
+		final Employee emp = new Employee();
+		session.doWork(new Work(){
+			@Override
+			public void execute(Connection connection) throws SQLException {
+				PreparedStatement state = connection.prepareStatement("select id, empname from employee");
+				ResultSet rs = state.executeQuery();
+				while ( rs.next() ){
+					emp.setId(rs.getInt("id"));
+					emp.setEmpname(rs.getString("empname"));
+				}				
+			}			
+		});
+		tran.commit();
 	}
 	public static void testSqlQuery(){
 		Session session = getTestDaoInstance().getSessionFactory().openSession();
@@ -112,7 +141,13 @@ public class TestDao {
 //		result = session.createSQLQuery("select {kid.*}, {mother.*} from cats kid, cats mother where kid.mother_id = mother.id")
 //					.addEntity("kid", UnmappedCat.class)
 //					.addJoin("mother","kid.mother")
-//					.list();		
+//					.list();
+//		/*
+//		 * works after applying Transformers, it is non-managed entity now
+//		 * the alias is case sensitive
+//		 */
+//		result = session.createSQLQuery("select id, sex, birthdate,color, weight, litter_id as litterId from cats")
+//					.setResultTransformer(Transformers.aliasToBean(UnmappedCat.class)).list();
 //		/*
 //		 * 1. return type, List<Object[]>, 2 element as expected, one kid, one mother
 //		 * 2. mother property is not proxied for either mother or kid
@@ -155,9 +190,9 @@ public class TestDao {
 //		 * named query DML, works
 //		 */
 //		session.getNamedQuery("sqlQueryInsert").executeUpdate();
-		/*
-		 * named query, return scalar 
-		 */
+//		/*
+//		 * named query, return scalar 
+//		 */
 		result = session.getNamedQuery("sqlQueryScalar").list();
 	}
 	
@@ -815,20 +850,28 @@ public class TestDao {
 			logger.debug(it.next());			
 		}				
 	}
-	
+	/*
+	 * when saving from one side, that is 
+	 * session.save(emp), whatever inverse value is, both employ and department are saved and foreign key is set 
+	 * correctly.
+	 * 
+	 * when saving from many side, without emp.setDepartment(dept), foreign key is set to null, even though inverse
+	 * is false for the collection, (for inverse = true, it is the same)  This is not as my expection.
+	 */	
 	public static void testOne2ManySave(){
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		TestDao dao = (TestDao)ctx.getBean("testDao");
 		Session session = dao.getSessionFactory().openSession();
 		Department dept = new Department();
-		dept.setDeptname("joy");
+		dept.setDeptname("dept5");
 		Employee emp = new Employee();
-		emp.setDepartment(dept);
-		emp.setEmpname("diojin");
+//		emp.setDepartment(dept);
+		emp.setEmpname("yuffie");
 		emp.setEmpage(0);
 		emp.setContext("haha");
 		dept.getEmployees().add(emp);
-		session.save(dept);		
+		session.save(dept);
+//		session.save(emp);
 	}
 	/*
 	 * 5 sqls are generated in this case

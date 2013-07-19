@@ -612,6 +612,10 @@ If one lazy collection or single-valued proxy has to be fetched, Hibernate will 
 re-running the original query in a subselect. This works in the same way as batch-fetching but
 without the piecemeal loading.
 
+39.1
+At startup, Hibernate3 generates proxies by default for all persistent classes and uses them to
+enable lazy fetching of many-to-one and one-to-one associations.
+
 40 Understanding Collection performance
 To fully understand the relational
 structure and performance characteristics, we must also consider the structure of the primary

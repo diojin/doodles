@@ -8,7 +8,7 @@
 			<generator class="native" />     
     	</id>
         <property name="deptname" type="string"/>
-        <set name="employees" lazy="true" cascade="all" inverse="false">
+        <set name="employees" lazy="true" cascade="all" inverse="true">
         	<key column="deptid" />
         	<one-to-many class="Employee" />        
         </set>

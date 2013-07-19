@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class UnmappedCat {
-    private Long id; // identifier
+    private Integer id; // identifier
 
     private Date birthdate;
     private String color;
@@ -16,11 +16,11 @@ public class UnmappedCat {
     private UnmappedCat mother;
     private Set kittens = new HashSet();
    
-    public Long getId() {
+    public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

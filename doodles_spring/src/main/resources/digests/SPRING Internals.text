@@ -1,0 +1,76 @@
+1, 在具体的注入实现中,　接口注入(Type 1 IoC),  setter注入(Type 2 Ioc), 构造器注入(Type ３ Ioc)是主要的注入方式.
+
+2, CGLIB是一个常用的字节码生成器的类库, 它提供了一系列的API来提供生成和转换Java的字节码的功能.　在Spring AOP中
+也可以使用CGLIB对Java的字节码进行增强.
+
+3, SimpleInstantiationStrategy 是Spring用来生成默认Bean对象的默认类, 它提供了两种实例化Java对象的方法, 
+一种BeanUtils, 它使用了JVM的反射功能, 一种是通过前面提到的CGLIB来生成
+
+4, 
+public FileSystemXmlApplicationContext(String[] configLocations, boolean refresh, ApplicationContext parent)
+		throws BeansException {
+
+	super(parent);
+	setConfigLocations(configLocations);
+	if (refresh) {
+		refresh();
+	}
+}
+
+对于容器的启动来说, refresh是一个很重要的方法. 该方法在AbstractApplicationContext类中找到, 他详细的描述了整个
+ApplicatoinContext的初始化过程, 比如BeanFactory的更新, MessageSource和PostProcessor的注册, 等等. 这里看起来
+更像是对ApplicationContext进行初始化的模板或执行提纲, 这个执行过程为Bean的生命周期提供了条件. 
+
+
+public void refresh() throws BeansException, IllegalStateException {
+	synchronized (this.startupShutdownMonitor) {
+		// Prepare this context for refreshing.
+		prepareRefresh();
+
+		// Tell the subclass to refresh the internal bean factory.
+		ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+		// Prepare the bean factory for use in this context.
+		prepareBeanFactory(beanFactory);
+
+		try {
+			// Allows post-processing of the bean factory in context subclasses.
+			postProcessBeanFactory(beanFactory);
+
+			// Invoke factory processors registered as beans in the context.
+			invokeBeanFactoryPostProcessors(beanFactory);
+
+			// Register bean processors that intercept bean creation.
+			registerBeanPostProcessors(beanFactory);
+
+			// Initialize message source for this context.
+			initMessageSource();
+
+			// Initialize event multicaster for this context.
+			initApplicationEventMulticaster();
+
+			// Initialize other special beans in specific context subclasses.
+			onRefresh();
+
+			// Check for listener beans and register them.
+			registerListeners();
+
+			// Instantiate all remaining (non-lazy-init) singletons.
+			finishBeanFactoryInitialization(beanFactory);
+
+			// Last step: publish corresponding event.
+			finishRefresh();
+		}
+
+		catch (BeansException ex) {
+			// Destroy already created singletons to avoid dangling resources.
+			destroyBeans();
+
+			// Reset 'active' flag.
+			cancelRefresh(ex);
+
+			// Propagate exception to caller.
+			throw ex;
+		}
+	}
+}
