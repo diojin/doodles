@@ -51,12 +51,6 @@
   		<version>1.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>com.citi.161534</groupId>
-  		<artifactId>risk-credit-domain</artifactId>
-  		<version>2.0_A8</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>org.springframework.batch</groupId>
   		<artifactId>spring-batch-core</artifactId>
   		<version>2.1.8.RELEASE</version>

@@ -30,8 +30,8 @@
     	class="org.apache.commons.dbcp.BasicDataSource"
     	destroy-method="close"
     	p:driverClassName="com.sybase.jdbc3.jdbc.SybDriver"
-    	p:url="jdbc:sybase:Tds:swrmadb1d.nam.nsroot.net:4300/riskDb"
-		p:username="risk_dbo"
+    	p:url="jdbc:sybase:Tds:server:4300/myDB"
+		p:username="dio"
 		p:password="Super6" />
 	
   	<!-- 

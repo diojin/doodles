@@ -24,7 +24,7 @@
 	</workdir>
 	<properties>
 		<core>
-			<basedir>C:/workspace/risk-credit/risk-credit-core</basedir>
+			<basedir>C:/workspace/project-core</basedir>
 			<classpath>batch/install/lib</classpath>
 			<locator>batch/src/main/resources/gemfire/gemfire-${instance}.properties</locator>	
 			<server>batch/src/main/resources/gemfire/cache.xml</server>
@@ -33,7 +33,7 @@
 			<jmxport>10602</jmxport>		
 		</core>
 		<common>
-			<basedir>C:/workspace/risk-credit/risk-credit-common</basedir>
+			<basedir>C:/workspace/project-common</basedir>
 			<classpath>batch/install/lib</classpath>
 			<locator>impl/src/main/resources/gemfire/common-cache-server-${instance}.properties</locator>
 			<server>impl/src/main/resources/gemfire/common-cache-server.xml</server>
@@ -45,7 +45,7 @@
 			<jmxport-w>12714</jmxport-w>
 		</common>
 		<facility>
-			<basedir>C:/workspace/risk-credit/risk-credit-facility</basedir>
+			<basedir>C:/workspace/project-facility</basedir>
 			<classpath>batch/install/lib</classpath>			
 			<locator>impl/src/main/resources/gemfire/facility-cache-server-${instance}.properties</locator>
 			<server>impl/src/main/resources/gemfire/facility-cache-server.xml</server>
