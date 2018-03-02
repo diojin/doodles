@@ -1,0 +1,26 @@
+package outerhaven.cip.listing.three;
+
+import outerhaven.cip.common.NotThreadSafe;
+
+/**
+ * Listing 3.1
+ * @author threepwood
+ *
+ */
+@NotThreadSafe
+public class NoVisibility {
+    private static boolean ready;
+    private static int number;
+    private static class ReaderThread extends Thread {
+        public void run() {
+            while (!ready)
+                Thread.yield();
+            System.out.println(number);
+        }
+    }
+    public static void main(String[] args) {
+        new ReaderThread().start();
+        number = 42;
+        ready = true;
+    }
+}
