@@ -1,4 +1,5 @@
-This project contains 4 sub projects:   
+**This project contains 4 sub projects**:  
+ 
 ### doodles-spring  
 Some code samples in Spring.  
 ### doodles-hibernate  
